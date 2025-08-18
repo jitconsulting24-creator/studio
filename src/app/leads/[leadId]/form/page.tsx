@@ -13,6 +13,7 @@ import { FolderKanban, Send, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { notFound, useParams } from 'next/navigation';
 import { DUMMY_LEADS } from '@/lib/data';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const COMMON_FEATURES = [
     "Login de Usuarios", 
@@ -22,6 +23,8 @@ const COMMON_FEATURES = [
     "Integración con API externa", 
     "Reportes y Analíticas"
 ];
+
+const PLATFORMS = ["Aplicación Web", "Aplicación iOS", "Aplicación Android", "Otro"];
 
 export default function LeadFormPage() {
     const { toast } = useToast();
@@ -34,9 +37,10 @@ export default function LeadFormPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         contactInfo: { name: '', company: '', email: '', phone: '' },
-        projectInfo: { projectName: '', projectIdea: '', targetAudience: '', mainGoals: ['', '', ''] },
-        scopeAndFeatures: { commonFeatures: [] as string[], otherFeatures: '' },
-        designAndUX: { hasBrandIdentity: 'no', brandFiles: [], designInspirations: ['', ''] },
+        projectInfo: { projectName: '', projectIdea: '', targetAudience: '', mainGoals: ['', '', ''], competitors: '', budget: '' },
+        scopeAndFeatures: { platforms: [] as string[], commonFeatures: [] as string[], otherFeatures: '' },
+        designAndUX: { hasBrandIdentity: 'no', brandFiles: [], designInspirations: ['', ''], lookAndFeel: '' },
+        contentAndStrategy: { contentCreation: '', marketingPlan: '', maintenance: '' },
         attachments: [],
     });
 
@@ -61,6 +65,14 @@ export default function LeadFormPage() {
         newGoals[index] = value;
         handleChange('projectInfo', 'mainGoals', newGoals);
     };
+    
+    const handlePlatformChange = (platform: string) => {
+        const currentPlatforms = formData.scopeAndFeatures.platforms;
+        const newPlatforms = currentPlatforms.includes(platform)
+            ? currentPlatforms.filter(p => p !== platform)
+            : [...currentPlatforms, platform];
+        handleChange('scopeAndFeatures', 'platforms', newPlatforms);
+    }
 
     const handleFeatureChange = (feature: string) => {
         const currentFeatures = formData.scopeAndFeatures.commonFeatures;
@@ -79,13 +91,13 @@ export default function LeadFormPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        console.log('Form submitted:', formData);
+        console.log('Form submitted:', JSON.stringify(formData, null, 2));
         
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         setIsLoading(false);
-        setCurrentStep(6); // Go to thank you page
+        setCurrentStep(7); // Go to thank you page
         toast({
             title: "Requerimientos Enviados",
             description: "Gracias por completar el formulario. Nos pondremos en contacto contigo pronto.",
@@ -145,7 +157,7 @@ export default function LeadFormPage() {
                     <>
                         <CardHeader>
                             <CardTitle>Paso 2: Sobre tu Proyecto</CardTitle>
-                            <CardDescription>Describe tu idea y tus metas.</CardDescription>
+                            <CardDescription>Describe tu idea, tu público y tus metas.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                            <div className="space-y-2">
@@ -160,11 +172,32 @@ export default function LeadFormPage() {
                                 <Label htmlFor="targetAudience">¿Quién es tu público objetivo?</Label>
                                 <Textarea id="targetAudience" rows={3} value={formData.projectInfo.targetAudience} onChange={e => handleChange('projectInfo', 'targetAudience', e.target.value)} />
                             </div>
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                                 <Label>¿Cuáles son los 3 objetivos más importantes del proyecto?</Label>
                                 <Input placeholder="Objetivo 1" value={formData.projectInfo.mainGoals[0]} onChange={e => handleGoalChange(0, e.target.value)} />
                                 <Input placeholder="Objetivo 2" value={formData.projectInfo.mainGoals[1]} onChange={e => handleGoalChange(1, e.target.value)} />
                                 <Input placeholder="Objetivo 3" value={formData.projectInfo.mainGoals[2]} onChange={e => handleGoalChange(2, e.target.value)} />
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="competitors">¿Quiénes son tus competidores principales?</Label>
+                                    <Input id="competitors" value={formData.projectInfo.competitors} onChange={e => handleChange('projectInfo', 'competitors', e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="budget">Presupuesto Estimado</Label>
+                                    <Select value={formData.projectInfo.budget} onValueChange={value => handleChange('projectInfo', 'budget', value)}>
+                                        <SelectTrigger id="budget">
+                                            <SelectValue placeholder="Selecciona un rango" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="<5k">Menos de $5,000</SelectItem>
+                                            <SelectItem value="5k-15k">$5,000 - $15,000</SelectItem>
+                                            <SelectItem value="15k-30k">$15,000 - $30,000</SelectItem>
+                                            <SelectItem value="30k-50k">$30,000 - $50,000</SelectItem>
+                                            <SelectItem value=">50k">Más de $50,000</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                         </CardContent>
                         <CardFooter className="justify-between">
@@ -177,9 +210,26 @@ export default function LeadFormPage() {
                      <>
                         <CardHeader>
                             <CardTitle>Paso 3: Alcance y Funcionalidades</CardTitle>
-                            <CardDescription>¿Qué debería hacer tu aplicación?</CardDescription>
+                            <CardDescription>¿Qué debería hacer tu aplicación y en qué plataformas?</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
+                            <div className="space-y-2">
+                                <Label>¿En qué plataformas necesitas la aplicación?</Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {PLATFORMS.map(platform => (
+                                        <div key={platform} className="flex items-center space-x-2">
+                                            <Checkbox 
+                                                id={`platform-${platform}`}
+                                                onCheckedChange={() => handlePlatformChange(platform)}
+                                                checked={formData.scopeAndFeatures.platforms.includes(platform)}
+                                            />
+                                            <label htmlFor={`platform-${platform}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                {platform}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                             <div className="space-y-2">
                                 <Label>Selecciona las funcionalidades comunes que necesitas:</Label>
                                 <div className="grid grid-cols-2 gap-2">
@@ -241,6 +291,10 @@ export default function LeadFormPage() {
                                 <Input placeholder="https://www.apple.com" value={formData.designAndUX.designInspirations[0]} onChange={e => handleInspirationChange(0, e.target.value)} />
                                 <Input placeholder="https://stripe.com" value={formData.designAndUX.designInspirations[1]} onChange={e => handleInspirationChange(1, e.target.value)} />
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="lookAndFeel">Describe el estilo visual que buscas (p. ej., Moderno, Juguetón, Corporativo)</Label>
+                                <Textarea id="lookAndFeel" rows={3} value={formData.designAndUX.lookAndFeel} onChange={e => handleChange('designAndUX', 'lookAndFeel', e.target.value)} />
+                            </div>
                         </CardContent>
                         <CardFooter className="justify-between">
                             <Button variant="outline" onClick={prevStep}>Anterior</Button>
@@ -248,10 +302,36 @@ export default function LeadFormPage() {
                         </CardFooter>
                     </>
                 )}
-                {currentStep === 5 && (
+                 {currentStep === 5 && (
                     <>
                         <CardHeader>
-                            <CardTitle>Paso 5: Archivos Adjuntos</CardTitle>
+                            <CardTitle>Paso 5: Contenido y Estrategia</CardTitle>
+                            <CardDescription>Pensemos a futuro sobre el proyecto.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="contentCreation">¿Quién se encargará de crear el contenido inicial (textos, imágenes, etc.)?</Label>
+                                <Textarea id="contentCreation" rows={3} value={formData.contentAndStrategy.contentCreation} onChange={e => handleChange('contentAndStrategy', 'contentCreation', e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="marketingPlan">¿Tienes algún plan de marketing para después del lanzamiento?</Label>
+                                <Textarea id="marketingPlan" rows={3} value={formData.contentAndStrategy.marketingPlan} onChange={e => handleChange('contentAndStrategy', 'marketingPlan', e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="maintenance">¿Estás interesado en un plan de mantenimiento y soporte continuo?</Label>
+                                <Textarea id="maintenance" rows={3} value={formData.contentAndStrategy.maintenance} onChange={e => handleChange('contentAndStrategy', 'maintenance', e.target.value)} />
+                            </div>
+                        </CardContent>
+                        <CardFooter className="justify-between">
+                            <Button variant="outline" onClick={prevStep}>Anterior</Button>
+                            <Button onClick={nextStep}>Siguiente</Button>
+                        </CardFooter>
+                    </>
+                )}
+                {currentStep === 6 && (
+                    <>
+                        <CardHeader>
+                            <CardTitle>Paso 6: Archivos Adjuntos</CardTitle>
                             <CardDescription>¿Tienes documentos de referencia? Súbelos aquí.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -286,7 +366,7 @@ export default function LeadFormPage() {
                         </CardFooter>
                     </>
                 )}
-                 {currentStep === 6 && (
+                 {currentStep === 7 && (
                     <>
                         <CardHeader className="items-center text-center">
                             <CardTitle>¡Gracias!</CardTitle>
@@ -303,3 +383,5 @@ export default function LeadFormPage() {
     </div>
   );
 }
+
+    
