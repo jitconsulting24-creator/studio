@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FolderKanban, LayoutDashboard, Settings } from 'lucide-react';
+import { FolderKanban, LayoutDashboard, Settings, Users } from 'lucide-react';
 
 export function Sidebar() {
   return (
@@ -13,10 +13,17 @@ export function Sidebar() {
       <nav className="flex-1 space-y-2 p-4">
         <Link
           href="/dashboard"
-          className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
         >
           <LayoutDashboard className="h-4 w-4" />
           Panel
+        </Link>
+        <Link
+          href="/dashboard/leads"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+        >
+          <Users className="h-4 w-4" />
+          Leads
         </Link>
         <Link
           href="#"

@@ -3,6 +3,7 @@ export type ProjectStatus = "Planificación" | "En Progreso" | "En Revisión" | 
 export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado";
 export type ChangeRequestStatus = "Pendiente de Aprobación" | "Aprobado" | "Rechazado";
 export type PartStatus = "Pendiente" | "Completado";
+export type LeadStatus = "Nuevo" | "Contactado" | "Propuesta Enviada" | "Convertido";
 
 export interface Requirement {
   id: string;
@@ -73,4 +74,41 @@ export interface Project {
   modules: Module[];
   timelineEvents: TimelineEvent[];
   changeRequests: ChangeRequest[];
+}
+
+export interface Lead {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  status: LeadStatus;
+  createdAt: Date;
+  formLink: string;
+}
+
+export interface ClientRequirements {
+  leadId: string;
+  contactInfo: {
+    name: string;
+    company: string;
+    email: string;
+    phone: string;
+  };
+  projectInfo: {
+    projectName: string;
+    projectIdea: string;
+    targetAudience: string;
+    mainGoals: string[];
+  };
+  scopeAndFeatures: {
+    commonFeatures: string[];
+    otherFeatures: string;
+  };
+  designAndUX: {
+    hasBrandIdentity: boolean;
+    brandFiles?: { name: string, url: string }[];
+    designInspirations: string[];
+  };
+  attachments?: { name: string, url: string }[];
+  submittedAt: Date;
 }

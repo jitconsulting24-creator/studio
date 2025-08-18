@@ -1,5 +1,5 @@
 
-import type { Project } from './definitions';
+import type { Project, Lead, ClientRequirements } from './definitions';
 
 export const DUMMY_PROJECTS: Project[] = [
   {
@@ -117,3 +117,26 @@ export const DUMMY_PROJECTS: Project[] = [
     changeRequests: [],
   },
 ];
+
+export const DUMMY_LEADS: Lead[] = [
+    {
+        id: 'lead-1',
+        name: 'Ana Pérez',
+        email: 'ana.perez@example.com',
+        company: 'Tech Solutions',
+        status: 'Nuevo',
+        createdAt: new Date('2024-05-01'),
+        formLink: '/leads/lead-1/form'
+    },
+    {
+        id: 'lead-2',
+        name: 'Carlos Gómez',
+        email: 'carlos.gomez@example.com',
+        company: 'Innovate Corp',
+        status: 'Contactado',
+        createdAt: new Date('2024-05-05'),
+        formLink: '/leads/lead-2/form'
+    }
+];
+
+export const DUMMY_CLIENT_REQUIREMENTS: ClientRequirements[] = [];
