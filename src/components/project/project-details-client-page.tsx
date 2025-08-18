@@ -1,7 +1,7 @@
 
 'use client';
 import { useState } from 'react';
-import type { Project, Module, ChangeRequestStatus, TimelineEvent, Part, PartStatus } from '@/lib/definitions';
+import type { Project, Module, ChangeRequestStatus, TimelineEvent, Part, Requirement } from '@/lib/definitions';
 import ProjectHeader from './project-header';
 import RequirementsCard from './requirements-card';
 import ModulesAccordion from './modules-accordion';
@@ -118,6 +118,45 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
     });
   };
 
+  const handleAddRequirement = (requirementData: Omit<Requirement, 'id'>) => {
+    const newRequirement: Requirement = {
+      ...requirementData,
+      id: `req-${Date.now()}`,
+    };
+    setProject(prev => ({ ...prev, initialRequirements: [...prev.initialRequirements, newRequirement]}));
+    addTimelineEvent(`Nuevo requisito añadido: "${newRequirement.title}"`, 'admin');
+    toast({
+      title: 'Requisito Añadido',
+      description: 'Se ha añadido un nuevo requisito inicial al proyecto.',
+    });
+  };
+
+  const handleEditRequirement = (updatedRequirement: Requirement) => {
+    setProject(prev => ({
+      ...prev,
+      initialRequirements: prev.initialRequirements.map(r => r.id === updatedRequirement.id ? updatedRequirement : r),
+    }));
+    addTimelineEvent(`Requisito actualizado: "${updatedRequirement.title}"`, 'admin');
+    toast({
+      title: 'Requisito Actualizado',
+      description: 'El requisito ha sido actualizado.',
+    });
+  };
+
+  const handleDeleteRequirement = (requirementId: string) => {
+    const requirementTitle = project.initialRequirements.find(r => r.id === requirementId)?.title || 'Desconocido';
+    setProject(prev => ({
+      ...prev,
+      initialRequirements: prev.initialRequirements.filter(r => r.id !== requirementId),
+    }));
+    addTimelineEvent(`Requisito eliminado: "${requirementTitle}"`, 'admin');
+    toast({
+      variant: 'destructive',
+      title: 'Requisito Eliminado',
+      description: 'El requisito ha sido eliminado.',
+    });
+  };
+
   return (
     <div className="space-y-8">
       <ProjectHeader project={project} />
@@ -140,6 +179,9 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
             requirements={project.initialRequirements} 
             onAddModules={handleAddModulesFromAI}
             projectDescription={project.description}
+            onAddRequirement={handleAddRequirement}
+            onEditRequirement={handleEditRequirement}
+            onDeleteRequirement={handleDeleteRequirement}
           />
           <ChangeRequestsList 
             requests={project.changeRequests} 

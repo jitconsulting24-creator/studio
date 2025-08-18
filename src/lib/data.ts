@@ -11,8 +11,8 @@ export const DUMMY_PROJECTS: Project[] = [
     deadline: new Date('2024-08-30'),
     shareableLinkId: 'client-ecommerce-link-123',
     initialRequirements: [
-      { title: 'User Authentication', url: 'https://example.com/doc/auth' },
-      { title: 'Product Catalog API', url: 'https://example.com/doc/products' },
+      { id: 'req-1', title: 'User Authentication', url: 'https://example.com/doc/auth' },
+      { id: 'req-2', title: 'Product Catalog API', url: 'https://example.com/doc/products' },
     ],
     projectDocuments: [
         { id: 'doc-1', name: 'Brief del Proyecto', url: '#', type: 'Brief' },
@@ -25,7 +25,7 @@ export const DUMMY_PROJECTS: Project[] = [
         description: 'Módulo para la autenticación de usuarios y gestión de perfiles.',
         status: 'Completado',
         deadline: new Date('2023-03-01'),
-        parts: [{ name: 'Frontend Login UI', status: 'Completado' }],
+        parts: [{ name: 'Frontend Login UI', status: 'Completado', id: 'part-1' }],
         stages: [{ name: 'API Endpoints', status: 'Completado' }],
         requirements: [{ description: 'OAuth 2.0 support', status: 'Completado' }],
         reviews: [{ notes: 'Approved by stakeholder', status: 'Completado' }],

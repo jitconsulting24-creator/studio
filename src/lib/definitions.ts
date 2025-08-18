@@ -4,6 +4,12 @@ export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado";
 export type ChangeRequestStatus = "Pendiente de Aprobación" | "Aprobado" | "Rechazado";
 export type PartStatus = "Pendiente" | "Completado";
 
+export interface Requirement {
+  id: string;
+  title: string;
+  url: string;
+}
+
 export interface Document {
   id: string;
   name: string;
@@ -62,7 +68,7 @@ export interface Project {
   startDate: Date;
   deadline: Date;
   shareableLinkId: string;
-  initialRequirements: { title: string; url: string }[];
+  initialRequirements: Requirement[];
   projectDocuments?: Document[];
   modules: Module[];
   timelineEvents: TimelineEvent[];
