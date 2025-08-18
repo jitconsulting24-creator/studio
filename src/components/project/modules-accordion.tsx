@@ -1,3 +1,5 @@
+'use client';
+import { useState } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -9,16 +11,35 @@ import StatusBadge from '../shared/status-badge';
 import { Button } from '../ui/button';
 import { Edit, Trash2, PlusCircle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { AddModuleDialog } from './add-module-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface ModulesAccordionProps {
   modules: Module[];
+  onAddModule: (module: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>) => void;
+  onDeleteModule: (moduleId: string) => void;
 }
 
-export default function ModulesAccordion({ modules }: ModulesAccordionProps) {
+export default function ModulesAccordion({ modules, onAddModule, onDeleteModule }: ModulesAccordionProps) {
+  const [isAddModuleDialogOpen, setIsAddModuleDialogOpen] = useState(false);
+  
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex-row items-center justify-between">
         <CardTitle>Development Modules</CardTitle>
+        <Button variant="outline" size="sm" onClick={() => setIsAddModuleDialogOpen(true)}>
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Module
+        </Button>
       </CardHeader>
       <CardContent>
         {modules.length > 0 ? (
@@ -36,14 +57,30 @@ export default function ModulesAccordion({ modules }: ModulesAccordionProps) {
                     <p className="text-sm text-muted-foreground">
                       Deadline: {module.deadline.toLocaleDateString()}
                     </p>
-                    {/* Add more details about parts, stages, etc. here */}
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" disabled>
                         <Edit className="mr-2 h-3 w-3" /> Edit
                       </Button>
-                      <Button variant="destructive" size="sm">
-                        <Trash2 className="mr-2 h-3 w-3" /> Delete
-                      </Button>
+                       <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                           <Button variant="destructive" size="sm">
+                              <Trash2 className="mr-2 h-3 w-3" /> Delete
+                           </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the module.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onDeleteModule(module.id)}>Delete</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                        </AlertDialog>
+
                     </div>
                   </div>
                 </AccordionContent>
@@ -53,12 +90,17 @@ export default function ModulesAccordion({ modules }: ModulesAccordionProps) {
         ) : (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
             <p>No modules have been added yet.</p>
-            <Button variant="link" className="mt-2">
+            <Button variant="link" className="mt-2" onClick={() => setIsAddModuleDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" /> Add a Module
             </Button>
           </div>
         )}
       </CardContent>
+       <AddModuleDialog
+        isOpen={isAddModuleDialogOpen}
+        onClose={() => setIsAddModuleDialogOpen(false)}
+        onAddModule={onAddModule}
+      />
     </Card>
   );
 }

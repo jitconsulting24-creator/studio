@@ -16,12 +16,19 @@ import { Label } from '@/components/ui/label';
 import { BrainCircuit, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { moduleGenerator } from '@/ai/flows/module-generator';
 import type { ModuleGeneratorOutput } from '@/ai/flows/module-generator';
+import type { Module } from '@/lib/definitions';
 
-export function ModuleGeneratorDialog() {
-  const [description, setDescription] = useState('');
+interface ModuleGeneratorDialogProps {
+  onAddModules: (modules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => void;
+  projectDescription: string;
+}
+
+export function ModuleGeneratorDialog({ onAddModules, projectDescription }: ModuleGeneratorDialogProps) {
+  const [description, setDescription] = useState(projectDescription);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<ModuleGeneratorOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async () => {
     if (!description) {
@@ -42,8 +49,21 @@ export function ModuleGeneratorDialog() {
     }
   };
 
+  const handleConfirm = () => {
+    if (result) {
+      const newModules = result.modules.map(m => ({
+        ...m,
+        deadline: new Date(m.deadline),
+      }));
+      onAddModules(newModules);
+    }
+    setIsOpen(false);
+    setResult(null);
+    setDescription(projectDescription);
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <BrainCircuit className="mr-2 h-4 w-4" />
@@ -101,19 +121,25 @@ export function ModuleGeneratorDialog() {
         )}
 
         <DialogFooter>
-          <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Wand2 className="mr-2 h-4 w-4" />
-                Generate Modules
-              </>
-            )}
-          </Button>
+          {result ? (
+             <Button onClick={handleConfirm}>
+                Add Modules to Project
+            </Button>
+          ) : (
+            <Button onClick={handleSubmit} disabled={isLoading}>
+                {isLoading ? (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                </>
+                ) : (
+                <>
+                    <Wand2 className="mr-2 h-4 w-4" />
+                    Generate Modules
+                </>
+                )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -1,6 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { DUMMY_PROJECTS } from './data';
+import type { ChangeRequest } from './definitions';
 
 export async function addChangeRequest(
   projectId: string,
@@ -12,14 +14,29 @@ export async function addChangeRequest(
     return { error: 'Request details are required.' };
   }
 
-  console.log('New Change Request for project', projectId);
-  console.log({ requestDetails });
-  
-  // Here you would typically interact with your database
-  // For now, we just log the data and revalidate the path
-  
-  revalidatePath(`/client-view/[shareableLinkId]`); // Use the correct linkId
-  revalidatePath(`/dashboard/projects/${projectId}`);
+  const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+
+  if (project) {
+      const newRequest: ChangeRequest = {
+          id: `cr-${Date.now()}`,
+          requestDetails,
+          status: 'Pendiente de Aprobación',
+          submittedAt: new Date(),
+      };
+      project.changeRequests.push(newRequest);
+      
+      const timelineEvent = {
+          eventDescription: `Client submitted a new change request.`,
+          eventDate: new Date(),
+          actor: 'cliente' as const
+      };
+      project.timelineEvents.push(timelineEvent);
+
+      revalidatePath(`/client-view/${project.shareableLinkId}`);
+      revalidatePath(`/dashboard/projects/${projectId}`);
+  } else {
+    return { error: 'Project not found.' };
+  }
 
   return { success: 'Change request submitted successfully.' };
 }

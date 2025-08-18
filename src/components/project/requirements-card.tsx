@@ -3,12 +3,15 @@ import { Button } from '../ui/button';
 import { ClipboardList, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { ModuleGeneratorDialog } from './module-generator-dialog';
+import type { Module } from '@/lib/definitions';
 
 interface RequirementsCardProps {
     requirements: { title: string; url: string }[];
+    onAddModules: (modules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => void;
+    projectDescription: string;
 }
 
-export default function RequirementsCard({ requirements }: RequirementsCardProps) {
+export default function RequirementsCard({ requirements, onAddModules, projectDescription }: RequirementsCardProps) {
   return (
     <Card>
         <CardHeader>
@@ -17,7 +20,7 @@ export default function RequirementsCard({ requirements }: RequirementsCardProps
                     <ClipboardList className="h-6 w-6 text-primary" />
                     <CardTitle>Initial Requirements</CardTitle>
                 </div>
-                <ModuleGeneratorDialog />
+                <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />
             </div>
             <CardDescription>
                 Original requirements for the project. Use the AI generator to create modules.

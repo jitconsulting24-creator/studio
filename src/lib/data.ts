@@ -5,7 +5,7 @@ export const DUMMY_PROJECTS: Project[] = [
     id: '1',
     name: 'E-commerce Platform',
     description: 'A full-featured e-commerce platform with a modern UI.',
-    status: 'In Progreso',
+    status: 'En Progreso',
     startDate: new Date('2023-01-15'),
     deadline: new Date('2024-08-30'),
     shareableLinkId: 'client-ecommerce-link-123',
@@ -23,6 +23,8 @@ export const DUMMY_PROJECTS: Project[] = [
         stages: [{ name: 'API Endpoints', status: 'Completado' }],
         requirements: [{ description: 'OAuth 2.0 support', status: 'Completado' }],
         reviews: [{ notes: 'Approved by stakeholder', status: 'Completado' }],
+        owner: 'Admin',
+        estimatedHours: 40,
       },
       {
         id: 'mod2',
@@ -33,6 +35,8 @@ export const DUMMY_PROJECTS: Project[] = [
         stages: [],
         requirements: [],
         reviews: [],
+        owner: 'Admin',
+        estimatedHours: 80,
       },
     ],
     timelineEvents: [
@@ -76,14 +80,18 @@ export const DUMMY_PROJECTS: Project[] = [
             name: 'Contact Management',
             status: 'Completado',
             deadline: new Date('2023-02-15'),
-            parts:[], stages: [], requirements:[], reviews:[]
+            parts:[], stages: [], requirements:[], reviews:[],
+            owner: 'Admin',
+            estimatedHours: 60,
         },
         {
             id: 'mod4',
             name: 'Reporting Engine',
             status: 'En Revisión',
             deadline: new Date('2024-06-01'),
-            parts:[], stages: [], requirements:[], reviews:[]
+            parts:[], stages: [], requirements:[], reviews:[],
+            owner: 'Admin',
+            estimatedHours: 120,
         }
     ],
     timelineEvents: [],

@@ -1,5 +1,5 @@
+import ProjectDetailsClientPage from '@/components/project/project-details-client-page';
 import { DUMMY_PROJECTS } from '@/lib/data';
-import ProjectView from '@/components/project/project-view';
 import { notFound } from 'next/navigation';
 
 export default function ProjectDetailsPage({
@@ -15,7 +15,7 @@ export default function ProjectDetailsPage({
 
   return (
     <div className="container mx-auto">
-      <ProjectView project={project} />
+        <ProjectDetailsClientPage initialProject={project} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import type { Project, Module, ChangeRequestStatus, TimelineEvent } from '@/lib/definitions';
@@ -8,7 +9,7 @@ import TimelineView from './timeline-view';
 import ChangeRequestsList from './change-requests-list';
 import { useToast } from '@/hooks/use-toast';
 
-export default function ProjectView({ project: initialProject }: { project: Project }) {
+export default function ProjectDetailsClientPage({ initialProject }: { initialProject: Project }) {
   const [project, setProject] = useState(initialProject);
   const { toast } = useToast();
 

@@ -1,10 +1,10 @@
-import type { ChangeRequest } from '@/lib/definitions';
+import type { ChangeRequest, ChangeRequestStatus } from '@/lib/definitions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Check, X } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
 
-export default function ChangeRequestsList({ requests }: { requests: ChangeRequest[] }) {
+export default function ChangeRequestsList({ requests, onChangeRequestStatus }: { requests: ChangeRequest[], onChangeRequestStatus: (id: string, status: ChangeRequestStatus) => void }) {
   return (
     <Card>
       <CardHeader>
@@ -25,10 +25,10 @@ export default function ChangeRequestsList({ requests }: { requests: ChangeReque
                 </p>
                 {request.status === 'Pendiente de Aprobación' && (
                   <div className="mt-3 flex gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onChangeRequestStatus(request.id, 'Aprobado')}>
                       <Check className="mr-1 h-4 w-4" /> Approve
                     </Button>
-                    <Button size="sm" variant="destructive">
+                    <Button size="sm" variant="destructive" onClick={() => onChangeRequestStatus(request.id, 'Rechazado')}>
                       <X className="mr-1 h-4 w-4" /> Reject
                     </Button>
                   </div>
