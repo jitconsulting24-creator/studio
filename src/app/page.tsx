@@ -20,20 +20,20 @@ export default function LoginPage() {
           <FolderKanban className="mb-4 h-12 w-12 text-primary" />
           <h1 className="text-3xl font-bold text-foreground">ProPlanner</h1>
           <p className="text-muted-foreground">
-            Project management, simplified.
+            Gestión de proyectos, simplificada.
           </p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Admin Login</CardTitle>
+            <CardTitle className="text-2xl">Acceso de Administrador</CardTitle>
             <CardDescription>
-              Enter your credentials to access the dashboard.
+              Introduce tus credenciales para acceder al panel.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Correo Electrónico</Label>
                 <Input
                   id="email"
                   type="email"
@@ -43,13 +43,13 @@ export default function LoginPage() {
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">Contraseña</Label>
                 </div>
                 <Input id="password" type="password" required />
               </div>
               <Link href="/dashboard" legacyBehavior>
                 <Button type="submit" className="w-full">
-                  Login
+                  Iniciar Sesión
                 </Button>
               </Link>
             </div>

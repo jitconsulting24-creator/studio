@@ -1,6 +1,8 @@
 import type { TimelineEvent } from '@/lib/definitions';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { CheckCircle, User, Bot } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const ActorIcon = ({ actor }: { actor: TimelineEvent['actor'] }) => {
     switch (actor) {
@@ -20,7 +22,7 @@ export default function TimelineView({ events }: { events: TimelineEvent[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Project Timeline</CardTitle>
+        <CardTitle>Cronología del Proyecto</CardTitle>
       </CardHeader>
       <CardContent>
         {events.length > 0 ? (
@@ -34,14 +36,14 @@ export default function TimelineView({ events }: { events: TimelineEvent[] }) {
                 <div className="pl-8">
                   <p className="font-semibold">{event.eventDescription}</p>
                   <p className="text-sm text-muted-foreground">
-                    {event.eventDate.toLocaleDateString()} by {event.actor}
+                    {format(event.eventDate, 'PPP', { locale: es })} por {event.actor}
                   </p>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-            <p className="text-sm text-muted-foreground text-center py-4">No timeline events yet.</p>
+            <p className="text-sm text-muted-foreground text-center py-4">Aún no hay eventos en la cronología.</p>
         )}
       </CardContent>
     </Card>

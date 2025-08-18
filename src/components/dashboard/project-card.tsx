@@ -34,19 +34,19 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       <CardContent className="flex-grow">
         <div>
           <div className="flex justify-between text-sm text-muted-foreground mb-1">
-            <span>Progress</span>
+            <span>Progreso</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <Progress value={progress} aria-label={`${Math.round(progress)}% complete`} />
+          <Progress value={progress} aria-label={`${Math.round(progress)}% completado`} />
           <div className="mt-2 text-sm text-muted-foreground">
-            {completedModules} of {totalModules} modules completed.
+            {completedModules} de {totalModules} módulos completados.
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <Link href={`/dashboard/projects/${project.id}`} className="w-full">
           <Button variant="outline" className="w-full">
-            View Details
+            Ver Detalles
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

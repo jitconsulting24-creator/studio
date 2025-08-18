@@ -13,10 +13,10 @@ function SubmitButton() {
     return (
         <Button type="submit" disabled={pending}>
             {pending ? (
-                'Submitting...'
+                'Enviando...'
             ) : (
                 <>
-                    <Send className="mr-2 h-4 w-4" /> Submit Request
+                    <Send className="mr-2 h-4 w-4" /> Enviar Solicitud
                 </>
             )}
         </Button>
@@ -37,7 +37,7 @@ export default function ChangeRequestForm({ projectId }: { projectId: string }) 
             });
         } else {
              toast({
-                title: 'Success!',
+                title: '¡Éxito!',
                 description: result.success,
                 className: 'bg-accent text-accent-foreground border-green-500'
             });
@@ -48,16 +48,16 @@ export default function ChangeRequestForm({ projectId }: { projectId: string }) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Request a Change</CardTitle>
+        <CardTitle>Solicitar un Cambio</CardTitle>
         <CardDescription>
-          Have a new idea or need to adjust something? Let us know.
+          ¿Tiene una nueva idea o necesita ajustar algo? Háganoslo saber.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form ref={formRef} action={handleSubmit} className="space-y-4">
           <Textarea
             name="requestDetails"
-            placeholder="Please describe the change you'd like to request in detail."
+            placeholder="Por favor, describa detalladamente el cambio que le gustaría solicitar."
             rows={5}
             required
           />

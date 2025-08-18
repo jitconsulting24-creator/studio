@@ -4,6 +4,8 @@ import StatusBadge from '../shared/status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Progress } from '../ui/progress';
 import ChangeRequestForm from './change-request-form';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function ClientPortalView({ project }: { project: Project }) {
   const completedModules = project.modules.filter(m => m.status === 'Completado').length;
@@ -31,33 +33,33 @@ export default function ClientPortalView({ project }: { project: Project }) {
         <div className="grid gap-4 md:grid-cols-2">
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg">Project Progress</CardTitle>
+                    <CardTitle className="text-lg">Progreso del Proyecto</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                        <span>Overall Progress</span>
+                        <span>Progreso General</span>
                         <span>{Math.round(progress)}%</span>
                     </div>
-                    <Progress value={progress} aria-label={`${Math.round(progress)}% complete`} />
+                    <Progress value={progress} aria-label={`${Math.round(progress)}% completado`} />
                     <p className="mt-2 text-sm text-muted-foreground">
-                        {completedModules} of {totalModules} modules completed.
+                        {completedModules} de {totalModules} módulos completados.
                     </p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg">Key Dates</CardTitle>
+                    <CardTitle className="text-lg">Fechas Clave</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground flex items-center"><Clock className="mr-2 h-4 w-4" /> Start Date: {project.startDate.toLocaleDateString()}</p>
-                    <p className="text-sm text-muted-foreground flex items-center"><CheckCircle className="mr-2 h-4 w-4" /> Expected Deadline: {project.deadline.toLocaleDateString()}</p>
+                    <p className="text-sm text-muted-foreground flex items-center"><Clock className="mr-2 h-4 w-4" /> Fecha de Inicio: {format(project.startDate, 'PPP', { locale: es })}</p>
+                    <p className="text-sm text-muted-foreground flex items-center"><CheckCircle className="mr-2 h-4 w-4" /> Fecha Límite Prevista: {format(project.deadline, 'PPP', { locale: es })}</p>
                 </CardContent>
             </Card>
         </div>
 
         <Card>
             <CardHeader>
-                <CardTitle>Modules Overview</CardTitle>
+                <CardTitle>Resumen de Módulos</CardTitle>
             </CardHeader>
             <CardContent>
                 {project.modules.length > 0 ? (
@@ -70,7 +72,7 @@ export default function ClientPortalView({ project }: { project: Project }) {
                         ))}
                     </ul>
                 ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">Modules will be listed here as they are planned.</p>
+                    <p className="text-sm text-muted-foreground text-center py-4">Los módulos se listarán aquí a medida que se planifiquen.</p>
                 )}
             </CardContent>
         </Card>
@@ -79,7 +81,7 @@ export default function ClientPortalView({ project }: { project: Project }) {
       </main>
       
       <footer className="text-center py-6 text-sm text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} ProPlanner. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} ProPlanner. Todos los derechos reservados.</p>
       </footer>
     </>
   );

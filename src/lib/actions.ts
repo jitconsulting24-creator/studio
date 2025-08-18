@@ -11,7 +11,7 @@ export async function addChangeRequest(
   const requestDetails = formData.get('requestDetails') as string;
 
   if (!requestDetails) {
-    return { error: 'Request details are required.' };
+    return { error: 'Los detalles de la solicitud son obligatorios.' };
   }
 
   const project = DUMMY_PROJECTS.find(p => p.id === projectId);
@@ -26,17 +26,17 @@ export async function addChangeRequest(
       project.changeRequests.push(newRequest);
       
       const timelineEvent = {
-          eventDescription: `Client submitted a new change request.`,
+          eventDescription: `El cliente ha enviado una nueva solicitud de cambio.`,
           eventDate: new Date(),
           actor: 'cliente' as const
       };
-      project.timelineEvents.push(timelineEvent);
+      project.timelineEvents.unshift(timelineEvent);
 
       revalidatePath(`/client-view/${project.shareableLinkId}`);
       revalidatePath(`/dashboard/projects/${projectId}`);
   } else {
-    return { error: 'Project not found.' };
+    return { error: 'Proyecto no encontrado.' };
   }
 
-  return { success: 'Change request submitted successfully.' };
+  return { success: 'Solicitud de cambio enviada con éxito.' };
 }

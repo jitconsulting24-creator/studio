@@ -12,20 +12,20 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ModuleGeneratorInputSchema = z.object({
-  projectDescription: z.string().describe('The description of the project.'),
+  projectDescription: z.string().describe('La descripción del proyecto.'),
 });
 export type ModuleGeneratorInput = z.infer<typeof ModuleGeneratorInputSchema>;
 
 const ModuleGeneratorOutputSchema = z.object({
   modules: z.array(
     z.object({
-      name: z.string().describe('The name of the module.'),
-      description: z.string().describe('The description of the module.'),
-      deadline: z.string().describe('The deadline for the module.'),
-      owner: z.string().describe('The owner of the module.'),
-      estimatedHours: z.number().describe('The estimated hours for the module.'),
+      name: z.string().describe('El nombre del módulo.'),
+      description: z.string().describe('La descripción del módulo.'),
+      deadline: z.string().describe('La fecha límite para el módulo en formato AAAA-MM-DD.'),
+      owner: z.string().describe('El responsable del módulo.'),
+      estimatedHours: z.number().describe('Las horas estimadas para el módulo.'),
     })
-  ).describe('An array of modules for the project.'),
+  ).describe('Un array de módulos para el proyecto.'),
 });
 
 export type ModuleGeneratorOutput = z.infer<typeof ModuleGeneratorOutputSchema>;
@@ -38,15 +38,14 @@ const prompt = ai.definePrompt({
   name: 'moduleGeneratorPrompt',
   input: {schema: ModuleGeneratorInputSchema},
   output: {schema: ModuleGeneratorOutputSchema},
-  prompt: `You are a project manager who is responsible for breaking down projects into modules.
+  prompt: `Eres un jefe de proyecto responsable de desglosar proyectos en módulos.
 
-You will be given a project description and you will need to break it down into modules.
-For each module, provide a name, description, deadline, owner, and estimated hours.
+Se te dará una descripción del proyecto y tendrás que desglosarla en módulos.
+Para cada módulo, proporciona un nombre, descripción, fecha límite, responsable y horas estimadas.
+El responsable debe ser una persona o un rol genérico (p. ej., 'Equipo de Frontend', 'Admin').
+La fecha límite debe estar en el futuro y en formato AAAA-MM-DD.
 
-Project Description: {{{projectDescription}}}
-
-Output:
-${JSON.stringify(ModuleGeneratorOutputSchema.shape, null, 2)}`,
+Descripción del Proyecto: {{{projectDescription}}}`,
 });
 
 const moduleGeneratorFlow = ai.defineFlow(

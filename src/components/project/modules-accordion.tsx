@@ -23,6 +23,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface ModulesAccordionProps {
   modules: Module[];
@@ -36,9 +38,9 @@ export default function ModulesAccordion({ modules, onAddModule, onDeleteModule 
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
-        <CardTitle>Development Modules</CardTitle>
+        <CardTitle>Módulos de Desarrollo</CardTitle>
         <Button variant="outline" size="sm" onClick={() => setIsAddModuleDialogOpen(true)}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Module
+            <PlusCircle className="mr-2 h-4 w-4" /> Añadir Módulo
         </Button>
       </CardHeader>
       <CardContent>
@@ -55,28 +57,28 @@ export default function ModulesAccordion({ modules, onAddModule, onDeleteModule 
                 <AccordionContent>
                   <div className="space-y-4 p-2">
                     <p className="text-sm text-muted-foreground">
-                      Deadline: {module.deadline.toLocaleDateString()}
+                      Fecha Límite: {format(module.deadline, 'PPP', { locale: es })}
                     </p>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" disabled>
-                        <Edit className="mr-2 h-3 w-3" /> Edit
+                        <Edit className="mr-2 h-3 w-3" /> Editar
                       </Button>
                        <AlertDialog>
                         <AlertDialogTrigger asChild>
                            <Button variant="destructive" size="sm">
-                              <Trash2 className="mr-2 h-3 w-3" /> Delete
+                              <Trash2 className="mr-2 h-3 w-3" /> Eliminar
                            </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the module.
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente el módulo.
                             </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDeleteModule(module.id)}>Delete</AlertDialogAction>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => onDeleteModule(module.id)}>Eliminar</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                         </AlertDialog>
@@ -89,9 +91,9 @@ export default function ModulesAccordion({ modules, onAddModule, onDeleteModule 
           </Accordion>
         ) : (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
-            <p>No modules have been added yet.</p>
+            <p>Aún no se han añadido módulos.</p>
             <Button variant="link" className="mt-2" onClick={() => setIsAddModuleDialogOpen(true)}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add a Module
+              <PlusCircle className="mr-2 h-4 w-4" /> Añadir un Módulo
             </Button>
           </div>
         )}

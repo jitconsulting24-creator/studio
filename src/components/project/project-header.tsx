@@ -7,6 +7,8 @@ import { Calendar, Clipboard, Link as LinkIcon, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import Link from 'next/link';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function ProjectHeader({ project }: { project: Project }) {
   const { toast } = useToast();
@@ -15,8 +17,8 @@ export default function ProjectHeader({ project }: { project: Project }) {
     const clientUrl = `${window.location.origin}/client-view/${project.shareableLinkId}`;
     navigator.clipboard.writeText(clientUrl);
     toast({
-      title: 'Link Copied!',
-      description: 'Client view link has been copied to your clipboard.',
+      title: '¡Enlace Copiado!',
+      description: 'El enlace de la vista del cliente ha sido copiado a tu portapapeles.',
     });
   };
 
@@ -30,19 +32,19 @@ export default function ProjectHeader({ project }: { project: Project }) {
       <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
          <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Timeline</CardTitle>
+            <CardTitle className="text-sm font-medium">Cronograma</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
-                <p>Start Date: {project.startDate.toLocaleDateString()}</p>
-                <p>Deadline: {project.deadline.toLocaleDateString()}</p>
+                <p>Fecha de Inicio: {format(project.startDate, 'PPP', { locale: es })}</p>
+                <p>Fecha Límite: {format(project.deadline, 'PPP', { locale: es })}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Client Portal Link</CardTitle>
+                <CardTitle className="text-sm font-medium">Enlace del Portal del Cliente</CardTitle>
                 <Clipboard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="flex items-center gap-2">

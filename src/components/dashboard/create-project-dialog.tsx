@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
       setStartDate(undefined);
       setDeadline(undefined);
     } else {
-        alert('Please fill all fields');
+        alert('Por favor, rellene todos los campos');
     }
   };
 
@@ -60,27 +61,27 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>Crear Nuevo Proyecto</DialogTitle>
           <DialogDescription>
-            Fill in the details below to create a new project.
+            Rellene los detalles a continuación para crear un nuevo proyecto.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Nombre
             </Label>
             <Input id="name" value={name} onChange={e => setName(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
-              Description
+              Descripción
             </Label>
             <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="start-date" className="text-right">
-              Start Date
+              Fecha de Inicio
             </Label>
              <Popover>
                 <PopoverTrigger asChild>
@@ -92,7 +93,7 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    {startDate ? format(startDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                 </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -101,13 +102,14 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
                     selected={startDate}
                     onSelect={setStartDate}
                     initialFocus
+                    locale={es}
                 />
                 </PopoverContent>
             </Popover>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="deadline" className="text-right">
-              Deadline
+              Fecha Límite
             </Label>
             <Popover>
                 <PopoverTrigger asChild>
@@ -119,7 +121,7 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {deadline ? format(deadline, "PPP") : <span>Pick a date</span>}
+                    {deadline ? format(deadline, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                 </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -128,13 +130,14 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
                     selected={deadline}
                     onSelect={setDeadline}
                     initialFocus
+                    locale={es}
                 />
                 </PopoverContent>
             </Popover>
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>Create Project</Button>
+          <Button type="submit" onClick={handleSubmit}>Crear Proyecto</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

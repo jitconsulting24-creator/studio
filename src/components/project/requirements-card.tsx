@@ -18,12 +18,12 @@ export default function RequirementsCard({ requirements, onAddModules, projectDe
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <ClipboardList className="h-6 w-6 text-primary" />
-                    <CardTitle>Initial Requirements</CardTitle>
+                    <CardTitle>Requisitos Iniciales</CardTitle>
                 </div>
                 <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />
             </div>
             <CardDescription>
-                Original requirements for the project. Use the AI generator to create modules.
+                Requisitos originales del proyecto. Utilice el generador de IA para crear módulos.
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -41,7 +41,7 @@ export default function RequirementsCard({ requirements, onAddModules, projectDe
                     ))}
                 </ul>
             ) : (
-                <p className="text-sm text-muted-foreground text-center py-4">No initial requirements listed.</p>
+                <p className="text-sm text-muted-foreground text-center py-4">No se han listado requisitos iniciales.</p>
             )}
         </CardContent>
     </Card>

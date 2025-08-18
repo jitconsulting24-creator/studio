@@ -3,13 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/button';
 import { Check, X } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function ChangeRequestsList({ requests, onChangeRequestStatus }: { requests: ChangeRequest[], onChangeRequestStatus: (id: string, status: ChangeRequestStatus) => void }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Change Requests</CardTitle>
-        <CardDescription>Review and respond to client requests.</CardDescription>
+        <CardTitle>Solicitudes de Cambio</CardTitle>
+        <CardDescription>Revise y responda a las solicitudes del cliente.</CardDescription>
       </CardHeader>
       <CardContent>
         {requests.length > 0 ? (
@@ -21,15 +23,15 @@ export default function ChangeRequestsList({ requests, onChangeRequestStatus }: 
                   <StatusBadge status={request.status as any} />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Submitted on: {request.submittedAt.toLocaleDateString()}
+                  Enviado el: {format(request.submittedAt, 'PPP', { locale: es })}
                 </p>
                 {request.status === 'Pendiente de Aprobación' && (
                   <div className="mt-3 flex gap-2">
                     <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onChangeRequestStatus(request.id, 'Aprobado')}>
-                      <Check className="mr-1 h-4 w-4" /> Approve
+                      <Check className="mr-1 h-4 w-4" /> Aprobar
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => onChangeRequestStatus(request.id, 'Rechazado')}>
-                      <X className="mr-1 h-4 w-4" /> Reject
+                      <X className="mr-1 h-4 w-4" /> Rechazar
                     </Button>
                   </div>
                 )}
@@ -37,7 +39,7 @@ export default function ChangeRequestsList({ requests, onChangeRequestStatus }: 
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted-foreground text-center py-4">No change requests have been submitted.</p>
+          <p className="text-sm text-muted-foreground text-center py-4">No se han enviado solicitudes de cambio.</p>
         )}
       </CardContent>
     </Card>

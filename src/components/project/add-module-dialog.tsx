@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface AddModuleDialogProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
       setOwner('');
       setEstimatedHours(0);
     } else {
-        alert('Please fill all fields');
+        alert('Por favor, rellene todos los campos.');
     }
   };
 
@@ -63,27 +64,27 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New Module</DialogTitle>
+          <DialogTitle>Añadir Nuevo Módulo</DialogTitle>
           <DialogDescription>
-            Fill in the details below to add a new module to the project.
+            Rellene los detalles a continuación para añadir un nuevo módulo al proyecto.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Nombre
             </Label>
             <Input id="name" value={name} onChange={e => setName(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
-              Description
+              Descripción
             </Label>
             <Textarea id="description" value={description} onChange={e => setDescription(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="deadline" className="text-right">
-              Deadline
+              Fecha Límite
             </Label>
             <Popover>
                 <PopoverTrigger asChild>
@@ -95,7 +96,7 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
                     )}
                 >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {deadline ? format(deadline, "PPP") : <span>Pick a date</span>}
+                    {deadline ? format(deadline, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                 </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -104,25 +105,26 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
                     selected={deadline}
                     onSelect={setDeadline}
                     initialFocus
+                    locale={es}
                 />
                 </PopoverContent>
             </Popover>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="owner" className="text-right">
-              Owner
+              Responsable
             </Label>
             <Input id="owner" value={owner} onChange={e => setOwner(e.target.value)} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="estimatedHours" className="text-right">
-              Est. Hours
+              Horas Est.
             </Label>
             <Input id="estimatedHours" type="number" value={estimatedHours} onChange={e => setEstimatedHours(parseInt(e.target.value, 10))} className="col-span-3" />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>Add Module</Button>
+          <Button type="submit" onClick={handleSubmit}>Añadir Módulo</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

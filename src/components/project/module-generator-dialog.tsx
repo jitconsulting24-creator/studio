@@ -17,6 +17,8 @@ import { BrainCircuit, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { moduleGenerator } from '@/ai/flows/module-generator';
 import type { ModuleGeneratorOutput } from '@/ai/flows/module-generator';
 import type { Module } from '@/lib/definitions';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface ModuleGeneratorDialogProps {
   onAddModules: (modules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => void;
@@ -32,7 +34,7 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
 
   const handleSubmit = async () => {
     if (!description) {
-      setError('Please enter a project description.');
+      setError('Por favor, ingrese una descripción del proyecto.');
       return;
     }
     setIsLoading(true);
@@ -42,7 +44,7 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
       const output = await moduleGenerator({ projectDescription: description });
       setResult(output);
     } catch (e) {
-      setError('Failed to generate modules. Please try again.');
+      setError('Error al generar los módulos. Por favor, inténtelo de nuevo.');
       console.error(e);
     } finally {
       setIsLoading(false);
@@ -67,25 +69,25 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
       <DialogTrigger asChild>
         <Button variant="outline">
           <BrainCircuit className="mr-2 h-4 w-4" />
-          Generate with AI
+          Generar con IA
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            AI Module Generator
+            Generador de Módulos con IA
           </DialogTitle>
           <DialogDescription>
-            Describe the project, and the AI will break it down into manageable modules.
+            Describa el proyecto, y la IA lo dividirá en módulos manejables.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="project-description">Project Description</Label>
+            <Label htmlFor="project-description">Descripción del Proyecto</Label>
             <Textarea
               id="project-description"
-              placeholder="e.g., 'Build a social media app with photo sharing and a news feed.'"
+              placeholder="p. ej., 'Crear una aplicación de redes sociales para compartir fotos y un feed de noticias.'"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -103,16 +105,16 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
 
         {result && (
           <div>
-            <h3 className="font-semibold mb-2">Generated Modules:</h3>
+            <h3 className="font-semibold mb-2">Módulos Generados:</h3>
             <div className="max-h-60 overflow-y-auto space-y-4 rounded-md border p-4">
               {result.modules.map((module, index) => (
                 <div key={index} className="text-sm">
                   <p className="font-bold">{module.name}</p>
                   <p className="text-muted-foreground">{module.description}</p>
                   <div className="flex gap-4 text-xs mt-1 text-muted-foreground">
-                    <span>Owner: {module.owner}</span>
-                    <span>Deadline: {module.deadline}</span>
-                    <span>Hours: {module.estimatedHours}</span>
+                    <span>Responsable: {module.owner}</span>
+                    <span>Fecha Límite: {format(new Date(module.deadline), 'PPP', { locale: es })}</span>
+                    <span>Horas: {module.estimatedHours}</span>
                   </div>
                 </div>
               ))}
@@ -123,19 +125,19 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
         <DialogFooter>
           {result ? (
              <Button onClick={handleConfirm}>
-                Add Modules to Project
+                Añadir Módulos al Proyecto
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={isLoading}>
                 {isLoading ? (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    Generando...
                 </>
                 ) : (
                 <>
                     <Wand2 className="mr-2 h-4 w-4" />
-                    Generate Modules
+                    Generar Módulos
                 </>
                 )}
             </Button>

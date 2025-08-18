@@ -22,7 +22,7 @@ export default function DashboardPage() {
       timelineEvents: [{
         actor: 'sistema',
         eventDate: new Date(),
-        eventDescription: `Project "${newProjectData.name}" created.`
+        eventDescription: `Proyecto "${newProjectData.name}" creado.`
       }],
       changeRequests: [],
       initialRequirements: [],
@@ -33,12 +33,12 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto">
       <PageHeader
-        title="Projects Dashboard"
-        description="An overview of all your ongoing projects."
+        title="Panel de Proyectos"
+        description="Un resumen de todos tus proyectos en curso."
       >
         <Button onClick={() => setIsCreateProjectDialogOpen(true)}>
           <PlusCircle className="mr-2 h-4 w-4" />
-          Create New Project
+          Crear Nuevo Proyecto
         </Button>
       </PageHeader>
 
