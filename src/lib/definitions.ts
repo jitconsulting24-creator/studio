@@ -102,7 +102,7 @@ export interface ClientRequirements {
   };
   scopeAndFeatures: {
     commonFeatures: string[];
-    otherFeatures: string;
+    otherFeatures: string[];
   };
   designAndUX: {
     hasBrandIdentity: boolean;

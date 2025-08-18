@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { FolderKanban, Send, Loader2 } from 'lucide-react';
+import { FolderKanban, Send, Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -36,11 +36,13 @@ export default function ProjectRequirementsForm({ projectType, onBack, onSubmitS
     const [formData, setFormData] = useState({
         contactInfo: { name: '', company: '', email: '', phone: '' },
         projectInfo: { projectName: '', projectIdea: '', targetAudience: '', mainGoals: ['', '', ''], competitors: '', budget: '' },
-        scopeAndFeatures: { platforms: [] as string[], commonFeatures: [] as string[], otherFeatures: '' },
+        scopeAndFeatures: { platforms: [] as string[], commonFeatures: [] as string[], otherFeatures: [] as string[] },
         designAndUX: { hasBrandIdentity: 'no', brandFiles: [], designInspirations: ['', ''], lookAndFeel: '' },
         contentAndStrategy: { contentCreation: '', marketingPlan: '', maintenance: '' },
         attachments: [],
     });
+    
+    const [otherFeatureInput, setOtherFeatureInput] = useState('');
     
     const relevantFeatures = COMMON_FEATURES[projectType] || COMMON_FEATURES['otro'];
 
@@ -77,6 +79,19 @@ export default function ProjectRequirementsForm({ projectType, onBack, onSubmitS
         handleChange('scopeAndFeatures', 'commonFeatures', newFeatures);
     }
     
+    const handleAddOtherFeature = () => {
+        if (otherFeatureInput.trim() !== '') {
+            const newOtherFeatures = [...formData.scopeAndFeatures.otherFeatures, otherFeatureInput.trim()];
+            handleChange('scopeAndFeatures', 'otherFeatures', newOtherFeatures);
+            setOtherFeatureInput('');
+        }
+    };
+
+    const handleRemoveOtherFeature = (index: number) => {
+        const newOtherFeatures = formData.scopeAndFeatures.otherFeatures.filter((_, i) => i !== index);
+        handleChange('scopeAndFeatures', 'otherFeatures', newOtherFeatures);
+    };
+
     const handleInspirationChange = (index: number, value: string) => {
         const newInspirations = [...formData.designAndUX.designInspirations];
         newInspirations[index] = value;
@@ -250,9 +265,37 @@ export default function ProjectRequirementsForm({ projectType, onBack, onSubmitS
                                 ))}
                                 </div>
                             </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="otherFeatures">Lista otras funcionalidades clave que no estén en la lista</Label>
-                                <Textarea id="otherFeatures" rows={4} value={formData.scopeAndFeatures.otherFeatures} onChange={e => handleChange('scopeAndFeatures', 'otherFeatures', e.target.value)} />
+                             <div className="space-y-4">
+                                <Label htmlFor="otherFeatures">Añade otras funcionalidades clave que no estén en la lista</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input 
+                                        id="otherFeatures"
+                                        value={otherFeatureInput}
+                                        onChange={(e) => setOtherFeatureInput(e.target.value)}
+                                        placeholder="p. ej. Sincronización en tiempo real"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleAddOtherFeature();
+                                            }
+                                        }}
+                                    />
+                                    <Button type="button" onClick={handleAddOtherFeature}>
+                                        <PlusCircle className="mr-2 h-4 w-4" /> Añadir
+                                    </Button>
+                                </div>
+                                {formData.scopeAndFeatures.otherFeatures.length > 0 && (
+                                    <ul className="mt-2 space-y-2">
+                                        {formData.scopeAndFeatures.otherFeatures.map((feature, index) => (
+                                            <li key={index} className="flex items-center justify-between bg-muted p-2 rounded-md">
+                                                <span className="text-sm">{feature}</span>
+                                                <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveOtherFeature(index)}>
+                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                </Button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
                         </CardContent>
                         <CardFooter className="justify-between">
