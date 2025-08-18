@@ -1,7 +1,7 @@
 
 'use client';
 import { useState } from 'react';
-import type { Project, Module, ChangeRequestStatus, TimelineEvent, Part, Requirement } from '@/lib/definitions';
+import type { Project, Module, ChangeRequestStatus, TimelineEvent, Part, Requirement, Document } from '@/lib/definitions';
 import ProjectHeader from './project-header';
 import RequirementsCard from './requirements-card';
 import ModulesAccordion from './modules-accordion';
@@ -157,6 +157,19 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
     });
   };
 
+  const handleAddDocument = (documentData: Omit<Document, 'id'>) => {
+    const newDocument: Document = {
+      ...documentData,
+      id: `doc-${Date.now()}`,
+    };
+    setProject(prev => ({ ...prev, projectDocuments: [...(prev.projectDocuments || []), newDocument] }));
+    addTimelineEvent(`Nuevo documento de proyecto añadido: "${newDocument.name}"`, 'admin');
+    toast({
+      title: 'Documento Añadido',
+      description: 'Se ha añadido un nuevo documento al proyecto.',
+    });
+  };
+
   return (
     <div className="space-y-8">
       <ProjectHeader project={project} />
@@ -174,7 +187,10 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
         </div>
 
         <div className="space-y-8">
-          <ProjectDocumentsCard documents={project.projectDocuments || []} />
+          <ProjectDocumentsCard 
+            documents={project.projectDocuments || []} 
+            onAddDocument={handleAddDocument}
+            />
           <RequirementsCard 
             requirements={project.initialRequirements} 
             onAddModules={handleAddModulesFromAI}

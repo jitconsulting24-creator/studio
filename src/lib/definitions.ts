@@ -99,16 +99,25 @@ export interface ClientRequirements {
     projectIdea: string;
     targetAudience: string;
     mainGoals: string[];
+    competitors: string;
+    budget: string;
   };
   scopeAndFeatures: {
+    platforms: string[];
     commonFeatures: string[];
     otherFeatures: string[];
   };
   designAndUX: {
-    hasBrandIdentity: boolean;
-    brandFiles?: { name: string, url: string }[];
+    hasBrandIdentity: string;
+    brandFiles?: any[];
     designInspirations: string[];
+    lookAndFeel: string;
   };
-  attachments?: { name: string, url: string }[];
+   contentAndStrategy: {
+    contentCreation: string;
+    marketingPlan: string;
+    maintenance: string;
+  };
+  attachments?: any[];
   submittedAt: Date;
 }

@@ -12,6 +12,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FolderKanban, Send, Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DUMMY_CLIENT_REQUIREMENTS, DUMMY_LEADS } from '@/lib/data';
+import { useParams } from 'next/navigation';
 
 interface ProjectRequirementsFormProps {
     projectType: string;
@@ -31,6 +33,9 @@ const PLATFORMS = ["Aplicación Web", "Aplicación iOS", "Aplicación Android", 
 
 export default function ProjectRequirementsForm({ projectType, onBack, onSubmitSuccess }: ProjectRequirementsFormProps) {
     const { toast } = useToast();
+    const params = useParams();
+    const leadId = params.leadId as string;
+    
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -101,9 +106,19 @@ export default function ProjectRequirementsForm({ projectType, onBack, onSubmitS
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        console.log('Form submitted:', JSON.stringify({ projectType, ...formData }, null, 2));
         
-        // Simulate API call
+        // In a real app, this would be an API call. Here we just update the dummy data.
+        const lead = DUMMY_LEADS.find(l => l.id === leadId);
+        if (lead) {
+            lead.status = 'Propuesta Enviada';
+            DUMMY_CLIENT_REQUIREMENTS.push({
+                leadId,
+                submittedAt: new Date(),
+                ...formData,
+            });
+            console.log('Updated DUMMY_CLIENT_REQUIREMENTS:', DUMMY_CLIENT_REQUIREMENTS);
+        }
+        
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         setIsLoading(false);

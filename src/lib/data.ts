@@ -4,15 +4,15 @@ import type { Project, Lead, ClientRequirements } from './definitions';
 export const DUMMY_PROJECTS: Project[] = [
   {
     id: '1',
-    name: 'E-commerce Platform',
-    description: 'A full-featured e-commerce platform with a modern UI.',
+    name: 'Plataforma de E-commerce',
+    description: 'Una plataforma de comercio electrónico con todas las funciones y una interfaz de usuario moderna.',
     status: 'En Progreso',
     startDate: new Date('2023-01-15'),
     deadline: new Date('2024-08-30'),
     shareableLinkId: 'client-ecommerce-link-123',
     initialRequirements: [
-      { id: 'req-1', title: 'User Authentication', url: 'https://example.com/doc/auth' },
-      { id: 'req-2', title: 'Product Catalog API', url: 'https://example.com/doc/products' },
+      { id: 'req-1', title: 'Autenticación de Usuario', url: 'https://example.com/doc/auth' },
+      { id: 'req-2', title: 'API del Catálogo de Productos', url: 'https://example.com/doc/products' },
     ],
     projectDocuments: [
         { id: 'doc-1', name: 'Brief del Proyecto', url: '#', type: 'Brief' },
@@ -21,14 +21,14 @@ export const DUMMY_PROJECTS: Project[] = [
     modules: [
       {
         id: 'mod1',
-        name: 'User Authentication',
+        name: 'Autenticación de Usuario',
         description: 'Módulo para la autenticación de usuarios y gestión de perfiles.',
         status: 'Completado',
         deadline: new Date('2023-03-01'),
-        parts: [{ name: 'Frontend Login UI', status: 'Completado', id: 'part-1' }],
-        stages: [{ name: 'API Endpoints', status: 'Completado' }],
-        requirements: [{ description: 'OAuth 2.0 support', status: 'Completado' }],
-        reviews: [{ notes: 'Approved by stakeholder', status: 'Completado' }],
+        parts: [{ name: 'UI de Login en Frontend', status: 'Completado', id: 'part-1' }],
+        stages: [{ name: 'Endpoints de API', status: 'Completado' }],
+        requirements: [{ description: 'Soporte para OAuth 2.0', status: 'Completado' }],
+        reviews: [{ notes: 'Aprobado por el stakeholder', status: 'Completado' }],
         owner: 'Admin',
         estimatedHours: 40,
         deliverables: [],
@@ -36,7 +36,7 @@ export const DUMMY_PROJECTS: Project[] = [
       },
       {
         id: 'mod2',
-        name: 'Product Catalog',
+        name: 'Catálogo de Productos',
         description: 'Módulo para la gestión del catálogo de productos.',
         status: 'En Progreso',
         deadline: new Date('2024-05-20'),
@@ -51,13 +51,13 @@ export const DUMMY_PROJECTS: Project[] = [
       },
     ],
     timelineEvents: [
-      { eventDescription: 'Project Kick-off', eventDate: new Date('2023-01-15'), actor: 'admin' },
-      { eventDescription: 'Module "User Authentication" completed', eventDate: new Date('2023-03-01'), actor: 'sistema' },
+      { eventDescription: 'Inicio del Proyecto', eventDate: new Date('2023-01-15'), actor: 'admin' },
+      { eventDescription: 'Módulo "Autenticación de Usuario" completado', eventDate: new Date('2023-03-01'), actor: 'sistema' },
     ],
     changeRequests: [
         {
             id: 'cr1',
-            requestDetails: 'Add support for dark mode in the client portal.',
+            requestDetails: 'Añadir soporte para modo oscuro en el portal del cliente.',
             status: 'Pendiente de Aprobación',
             submittedAt: new Date('2024-04-10'),
         }
@@ -65,8 +65,8 @@ export const DUMMY_PROJECTS: Project[] = [
   },
   {
     id: '2',
-    name: 'Mobile Banking App',
-    description: 'A native mobile app for iOS and Android for banking services.',
+    name: 'App de Banca Móvil',
+    description: 'Una app móvil nativa para iOS y Android para servicios bancarios.',
     status: 'Planificación',
     startDate: new Date('2024-03-01'),
     deadline: new Date('2025-02-28'),
@@ -74,13 +74,15 @@ export const DUMMY_PROJECTS: Project[] = [
     initialRequirements: [],
     projectDocuments: [],
     modules: [],
-    timelineEvents: [],
+    timelineEvents: [
+       { eventDescription: 'Proyecto "App de Banca Móvil" creado.', eventDate: new Date(), actor: 'sistema' }
+    ],
     changeRequests: [],
   },
   {
     id: '3',
-    name: 'Internal CRM Dashboard',
-    description: 'A web-based dashboard for managing customer relationships.',
+    name: 'Dashboard CRM Interno',
+    description: 'Un dashboard basado en web para la gestión de relaciones con clientes.',
     status: 'En Revisión',
     startDate: new Date('2022-11-01'),
     deadline: new Date('2024-06-15'),
@@ -90,7 +92,7 @@ export const DUMMY_PROJECTS: Project[] = [
     modules: [
         {
             id: 'mod3',
-            name: 'Contact Management',
+            name: 'Gestión de Contactos',
             description: 'Módulo para la gestión de contactos.',
             status: 'Completado',
             deadline: new Date('2023-02-15'),
@@ -102,7 +104,7 @@ export const DUMMY_PROJECTS: Project[] = [
         },
         {
             id: 'mod4',
-            name: 'Reporting Engine',
+            name: 'Motor de Informes',
             description: 'Módulo para el motor de informes.',
             status: 'En Revisión',
             deadline: new Date('2024-06-01'),
@@ -113,7 +115,9 @@ export const DUMMY_PROJECTS: Project[] = [
             documents: []
         }
     ],
-    timelineEvents: [],
+    timelineEvents: [
+        { eventDescription: 'Proyecto "Dashboard CRM Interno" creado.', eventDate: new Date(), actor: 'sistema' }
+    ],
     changeRequests: [],
   },
 ];

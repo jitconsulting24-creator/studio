@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const handleAddProject = (newProjectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => {
     const newProject: Project = {
       ...newProjectData,
-      id: (projects.length + 1).toString(),
+      id: `proj-${Date.now()}`,
       shareableLinkId: `client-link-${Date.now()}`,
       modules: [],
       timelineEvents: [{
@@ -29,6 +29,8 @@ export default function DashboardPage() {
       initialRequirements: [],
       projectDocuments: [],
     };
+    // In a real app, this would be an API call. Here we just update the dummy data.
+    DUMMY_PROJECTS.push(newProject);
     setProjects(prev => [...prev, newProject]);
   };
 
