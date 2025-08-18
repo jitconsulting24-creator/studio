@@ -1,7 +1,7 @@
 
 'use client';
 import { useState } from 'react';
-import type { Project, Module, ChangeRequestStatus, TimelineEvent } from '@/lib/definitions';
+import type { Project, Module, ChangeRequestStatus, TimelineEvent, Part, PartStatus } from '@/lib/definitions';
 import ProjectHeader from './project-header';
 import RequirementsCard from './requirements-card';
 import ModulesAccordion from './modules-accordion';
@@ -23,7 +23,7 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
     setProject(prev => ({ ...prev, timelineEvents: [newEvent, ...prev.timelineEvents] }));
   };
 
-  const handleAddModule = (newModuleData: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>) => {
+  const handleAddModule = (newModuleData: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => {
     const newModule: Module = {
         ...newModuleData,
         id: `mod-${Date.now()}`,
@@ -55,7 +55,7 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
     });
   };
 
-  const handleAddModulesFromAI = (newModules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => {
+  const handleAddModulesFromAI = (newModules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) => {
       const modulesToAdd: Module[] = newModules.map(m => ({
           ...m,
           id: `mod-${Date.now()}-${Math.random()}`,
@@ -104,6 +104,19 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
     });
   };
 
+  const handleModulePartsUpdate = (moduleId: string, updatedParts: Part[]) => {
+    setProject(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => 
+        m.id === moduleId ? { ...m, parts: updatedParts } : m
+      )
+    }));
+    addTimelineEvent(`Tareas actualizadas para el módulo "${project.modules.find(m => m.id === moduleId)?.name}"`, 'admin');
+    toast({
+        title: 'Tareas Actualizadas',
+        description: 'La lista de tareas ha sido actualizada.'
+    });
+  };
 
   return (
     <div className="space-y-8">
@@ -116,6 +129,7 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
             onAddModule={handleAddModule}
             onEditModule={handleEditModule}
             onDeleteModule={handleDeleteModule}
+            onModulePartsUpdate={handleModulePartsUpdate}
            />
           <TimelineView events={project.timelineEvents} />
         </div>

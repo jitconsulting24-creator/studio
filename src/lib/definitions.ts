@@ -2,6 +2,7 @@
 export type ProjectStatus = "Planificación" | "En Progreso" | "En Revisión" | "Completado";
 export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado";
 export type ChangeRequestStatus = "Pendiente de Aprobación" | "Aprobado" | "Rechazado";
+export type PartStatus = "Pendiente" | "Completado";
 
 export interface Document {
   id: string;
@@ -30,6 +31,13 @@ export interface TimelineEvent {
   actor: "admin" | "cliente" | "sistema";
 }
 
+export interface Part {
+  id: string;
+  name: string;
+  status: PartStatus;
+}
+
+
 export interface Module {
   id: string;
   name: string;
@@ -38,7 +46,7 @@ export interface Module {
   deadline: Date;
   owner: string;
   estimatedHours: number;
-  parts: { name: string; status: string }[];
+  parts: Part[];
   stages: { name: string; status: string }[];
   requirements: { description: string; status: string }[];
   reviews: { notes: string; status: string }[];
