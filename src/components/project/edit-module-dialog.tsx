@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -25,36 +25,39 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-interface AddModuleDialogProps {
+interface EditModuleDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddModule: (newModule: Omit<Module, 'id'| 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => void;
+  onEditModule: (module: Module) => void;
+  module: Module;
 }
 
-export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialogProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [deadline, setDeadline] = useState<Date | undefined>();
-  const [owner, setOwner] = useState('');
-  const [estimatedHours, setEstimatedHours] = useState<number>(0);
+export function EditModuleDialog({ isOpen, onClose, onEditModule, module }: EditModuleDialogProps) {
+  const [name, setName] = useState(module.name);
+  const [description, setDescription] = useState(module.description || '');
+  const [deadline, setDeadline] = useState<Date | undefined>(module.deadline);
+  const [owner, setOwner] = useState(module.owner);
+  const [estimatedHours, setEstimatedHours] = useState(module.estimatedHours);
+
+  useEffect(() => {
+    setName(module.name);
+    setDescription(module.description || '');
+    setDeadline(module.deadline);
+    setOwner(module.owner);
+    setEstimatedHours(module.estimatedHours);
+  }, [module]);
 
   const handleSubmit = () => {
     if (name && description && deadline && owner && estimatedHours > 0) {
-      onAddModule({
+      onEditModule({
+        ...module,
         name,
         description,
         deadline,
-        status: 'Pendiente',
         owner,
         estimatedHours
       });
       onClose();
-      // Reset fields
-      setName('');
-      setDescription('');
-      setDeadline(undefined);
-      setOwner('');
-      setEstimatedHours(0);
     } else {
         alert('Por favor, rellene todos los campos.');
     }
@@ -64,9 +67,9 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Añadir Nuevo Módulo</DialogTitle>
+          <DialogTitle>Editar Módulo</DialogTitle>
           <DialogDescription>
-            Rellene los detalles a continuación para añadir un nuevo módulo al proyecto.
+            Actualice los detalles del módulo.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -124,7 +127,8 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>Añadir Módulo</Button>
+          <Button variant="outline" onClick={onClose}>Cancelar</Button>
+          <Button type="submit" onClick={handleSubmit}>Guardar Cambios</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

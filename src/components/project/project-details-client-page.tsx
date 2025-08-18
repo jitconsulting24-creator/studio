@@ -8,6 +8,7 @@ import ModulesAccordion from './modules-accordion';
 import TimelineView from './timeline-view';
 import ChangeRequestsList from './change-requests-list';
 import { useToast } from '@/hooks/use-toast';
+import ProjectDocumentsCard from './project-documents-card';
 
 export default function ProjectDetailsClientPage({ initialProject }: { initialProject: Project }) {
   const [project, setProject] = useState(initialProject);
@@ -31,12 +32,26 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
         stages: [],
         requirements: [],
         reviews: [],
+        deliverables: [],
+        documents: [],
     };
     setProject(prev => ({ ...prev, modules: [...prev.modules, newModule] }));
     addTimelineEvent(`Nuevo módulo añadido: "${newModule.name}"`, 'admin');
      toast({
       title: 'Módulo Añadido',
       description: `El módulo "${newModule.name}" ha sido añadido al proyecto.`,
+    });
+  };
+
+  const handleEditModule = (updatedModule: Module) => {
+    setProject(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => m.id === updatedModule.id ? updatedModule : m)
+    }));
+    addTimelineEvent(`Módulo actualizado: "${updatedModule.name}"`, 'admin');
+    toast({
+      title: 'Módulo Actualizado',
+      description: `El módulo "${updatedModule.name}" ha sido actualizado.`,
     });
   };
 
@@ -49,6 +64,8 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
           stages: [],
           requirements: [],
           reviews: [],
+          deliverables: [],
+          documents: [],
       }));
 
       setProject(prev => ({...prev, modules: [...prev.modules, ...modulesToAdd]}));
@@ -97,12 +114,14 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
           <ModulesAccordion 
             modules={project.modules} 
             onAddModule={handleAddModule}
+            onEditModule={handleEditModule}
             onDeleteModule={handleDeleteModule}
            />
           <TimelineView events={project.timelineEvents} />
         </div>
 
         <div className="space-y-8">
+          <ProjectDocumentsCard documents={project.projectDocuments || []} />
           <RequirementsCard 
             requirements={project.initialRequirements} 
             onAddModules={handleAddModulesFromAI}

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { DUMMY_PROJECTS } from '@/lib/data';
@@ -13,7 +14,7 @@ export default function DashboardPage() {
   const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] =
     useState(false);
 
-  const handleAddProject = (newProjectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements'>) => {
+  const handleAddProject = (newProjectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => {
     const newProject: Project = {
       ...newProjectData,
       id: (projects.length + 1).toString(),
@@ -26,6 +27,7 @@ export default function DashboardPage() {
       }],
       changeRequests: [],
       initialRequirements: [],
+      projectDocuments: [],
     };
     setProjects(prev => [...prev, newProject]);
   };

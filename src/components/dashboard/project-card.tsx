@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import {
   Card,
@@ -29,7 +30,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <CardTitle className="text-xl font-bold">{project.name}</CardTitle>
             <StatusBadge status={project.status} />
         </div>
-        <CardDescription>{project.description}</CardDescription>
+        <CardDescription className="line-clamp-2">{project.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
         <div>

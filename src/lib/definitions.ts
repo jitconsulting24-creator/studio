@@ -1,7 +1,21 @@
+
 export type ProjectStatus = "Planificación" | "En Progreso" | "En Revisión" | "Completado";
 export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado";
 export type ChangeRequestStatus = "Pendiente de Aprobación" | "Aprobado" | "Rechazado";
 
+export interface Document {
+  id: string;
+  name: string;
+  url: string;
+  type: 'Brief' | 'Observaciones' | 'Acta de Reunión' | 'Otro';
+}
+
+export interface Deliverable {
+    id: string;
+    name: string;
+    url: string;
+    submittedDate: Date;
+}
 
 export interface ChangeRequest {
   id: string;
@@ -28,6 +42,8 @@ export interface Module {
   stages: { name: string; status: string }[];
   requirements: { description: string; status: string }[];
   reviews: { notes: string; status: string }[];
+  deliverables?: Deliverable[];
+  documents?: Document[];
 }
 
 export interface Project {
@@ -39,6 +55,7 @@ export interface Project {
   deadline: Date;
   shareableLinkId: string;
   initialRequirements: { title: string; url: string }[];
+  projectDocuments?: Document[];
   modules: Module[];
   timelineEvents: TimelineEvent[];
   changeRequests: ChangeRequest[];

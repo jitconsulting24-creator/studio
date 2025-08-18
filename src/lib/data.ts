@@ -1,3 +1,4 @@
+
 import type { Project } from './definitions';
 
 export const DUMMY_PROJECTS: Project[] = [
@@ -13,10 +14,15 @@ export const DUMMY_PROJECTS: Project[] = [
       { title: 'User Authentication', url: 'https://example.com/doc/auth' },
       { title: 'Product Catalog API', url: 'https://example.com/doc/products' },
     ],
+    projectDocuments: [
+        { id: 'doc-1', name: 'Brief del Proyecto', url: '#', type: 'Brief' },
+        { id: 'doc-2', name: 'Observaciones Iniciales', url: '#', type: 'Observaciones' },
+    ],
     modules: [
       {
         id: 'mod1',
         name: 'User Authentication',
+        description: 'Módulo para la autenticación de usuarios y gestión de perfiles.',
         status: 'Completado',
         deadline: new Date('2023-03-01'),
         parts: [{ name: 'Frontend Login UI', status: 'Completado' }],
@@ -25,10 +31,13 @@ export const DUMMY_PROJECTS: Project[] = [
         reviews: [{ notes: 'Approved by stakeholder', status: 'Completado' }],
         owner: 'Admin',
         estimatedHours: 40,
+        deliverables: [],
+        documents: []
       },
       {
         id: 'mod2',
         name: 'Product Catalog',
+        description: 'Módulo para la gestión del catálogo de productos.',
         status: 'En Progreso',
         deadline: new Date('2024-05-20'),
         parts: [],
@@ -37,6 +46,8 @@ export const DUMMY_PROJECTS: Project[] = [
         reviews: [],
         owner: 'Admin',
         estimatedHours: 80,
+        deliverables: [],
+        documents: []
       },
     ],
     timelineEvents: [
@@ -61,6 +72,7 @@ export const DUMMY_PROJECTS: Project[] = [
     deadline: new Date('2025-02-28'),
     shareableLinkId: 'client-banking-app-456',
     initialRequirements: [],
+    projectDocuments: [],
     modules: [],
     timelineEvents: [],
     changeRequests: [],
@@ -74,24 +86,31 @@ export const DUMMY_PROJECTS: Project[] = [
     deadline: new Date('2024-06-15'),
     shareableLinkId: 'client-crm-dash-789',
     initialRequirements: [],
+    projectDocuments: [],
     modules: [
         {
             id: 'mod3',
             name: 'Contact Management',
+            description: 'Módulo para la gestión de contactos.',
             status: 'Completado',
             deadline: new Date('2023-02-15'),
             parts:[], stages: [], requirements:[], reviews:[],
             owner: 'Admin',
             estimatedHours: 60,
+            deliverables: [],
+            documents: []
         },
         {
             id: 'mod4',
             name: 'Reporting Engine',
+            description: 'Módulo para el motor de informes.',
             status: 'En Revisión',
             deadline: new Date('2024-06-01'),
             parts:[], stages: [], requirements:[], reviews:[],
             owner: 'Admin',
             estimatedHours: 120,
+            deliverables: [],
+            documents: []
         }
     ],
     timelineEvents: [],

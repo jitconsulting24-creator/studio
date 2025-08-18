@@ -28,7 +28,7 @@ import { es } from 'date-fns/locale';
 interface CreateProjectDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProject: (newProject: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements'>) => void;
+  onAddProject: (newProject: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => void;
 }
 
 export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreateProjectDialogProps) {
