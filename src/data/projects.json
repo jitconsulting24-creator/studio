@@ -43,19 +43,19 @@
         "deadline": "2023-03-01T00:00:00.000Z",
         "parts": [
           {
+            "id": "part-1",
             "name": "UI de Login en Frontend",
-            "status": "Completado",
-            "id": "part-1"
+            "status": "Completado"
           },
           {
             "id": "part-1755562902401",
             "name": "Endpoint de API para Login",
-            "status": "Completado"
+            "status": "En Revisión"
           },
           {
             "id": "part-1755562903891",
             "name": "Gestión de Perfil de Usuario",
-            "status": "En Revisión"
+            "status": "Pendiente"
           }
         ],
         "stages": [

@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PlusCircle, Edit, Trash2, Save, X, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ModulePartsManagerProps {
   parts: Part[];
@@ -89,19 +90,32 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
     await onClientApprovePart(partId);
     setIsApproving(null);
   };
+  
+  const isPartCompleted = (part: Part) => part.status === 'Completado';
 
   return (
     <div className="space-y-2 rounded-md border p-2 bg-muted/30">
       <ul className="space-y-2">
         {currentParts.map((part) => (
           <li key={part.id} className="flex items-center gap-2 text-sm">
-            <Checkbox
-              id={`part-${part.id}`}
-              checked={part.status === 'Completado'}
-              onCheckedChange={() => handleToggleStatus(part.id)}
-              aria-label={`Marcar '${part.name}' como ${part.status === 'Completado' ? 'pendiente' : 'completado'}`}
-              disabled={isClientView || !onPartsChange}
-            />
+            {isClientView ? (
+                 <Checkbox
+                    id={`part-approve-${part.id}`}
+                    checked={isPartCompleted(part)}
+                    disabled={isPartCompleted(part) || part.status === 'Pendiente' || isApproving === part.id}
+                    onCheckedChange={() => handleApprovePart(part.id)}
+                    aria-label={`Aprobar '${part.name}'`}
+                 />
+            ) : (
+                <Checkbox
+                    id={`part-toggle-${part.id}`}
+                    checked={isPartCompleted(part)}
+                    onCheckedChange={() => handleToggleStatus(part.id)}
+                    aria-label={`Marcar '${part.name}' como ${isPartCompleted(part) ? 'pendiente' : 'completado'}`}
+                    disabled={!onPartsChange}
+                />
+            )}
+           
             {editingPartId === part.id && !isClientView ? (
               <Input
                 type="text"
@@ -112,10 +126,12 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
               />
             ) : (
               <label
-                htmlFor={`part-${part.id}`}
-                className={`flex-1 ${!isClientView && onPartsChange ? 'cursor-pointer' : ''} ${
-                  part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
-                }`}
+                htmlFor={isClientView ? `part-approve-${part.id}`: `part-toggle-${part.id}`}
+                className={cn(
+                    'flex-1',
+                    (onPartsChange && !isClientView) || (onClientApprovePart && part.status === 'En Revisión') ? 'cursor-pointer' : 'cursor-default',
+                    isPartCompleted(part) ? 'text-muted-foreground line-through' : ''
+                )}
               >
                 {part.name}
               </label>
@@ -144,11 +160,11 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
                     )}
                 </>
             )}
-             {isClientView && onClientApprovePart && part.status === 'En Revisión' && (
-                <Button size="sm" variant="ghost" className="h-7 px-2 text-green-600 hover:text-green-700" onClick={() => handleApprovePart(part.id)} disabled={isApproving === part.id}>
-                    {isApproving === part.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
-                    <span className="ml-1">Aprobar</span>
-                </Button>
+            {isClientView && isApproving === part.id && (
+                <Loader2 className="h-4 w-4 animate-spin" />
+            )}
+             {isClientView && !isApproving && isPartCompleted(part) && (
+                <span className="text-xs font-semibold text-green-600">Aprobado</span>
             )}
           </li>
         ))}
