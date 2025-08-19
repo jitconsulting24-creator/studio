@@ -12,11 +12,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FolderKanban, Send, Loader2, PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DUMMY_CLIENT_REQUIREMENTS, DUMMY_LEADS } from '@/lib/data';
-import { useParams } from 'next/navigation';
 import { submitLeadForm } from '@/lib/actions';
 
 interface ProjectRequirementsFormProps {
+    leadId: string;
     projectType: string;
     onBack: () => void;
     onSubmitSuccess: () => void;
@@ -32,10 +31,8 @@ const COMMON_FEATURES: { [key: string]: string[] } = {
 
 const PLATFORMS = ["Aplicación Web", "Aplicación iOS", "Aplicación Android", "Otro"];
 
-export default function ProjectRequirementsForm({ projectType, onBack, onSubmitSuccess }: ProjectRequirementsFormProps) {
+export default function ProjectRequirementsForm({ leadId, projectType, onBack, onSubmitSuccess }: ProjectRequirementsFormProps) {
     const { toast } = useToast();
-    const params = useParams();
-    const leadId = params.leadId as string;
     
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
