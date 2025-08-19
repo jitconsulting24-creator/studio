@@ -2,9 +2,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent, ClientRequirements, ModuleStatus } from './definitions';
+import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent, ClientRequirements, ModuleStatus, User } from './definitions';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { redirect } from 'next/navigation';
 
 const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'data', filename);
 
@@ -29,6 +30,34 @@ async function writeData<T>(filename: string, data: T[]): Promise<void> {
         console.error(`Error writing to ${filename}:`, error);
         throw error;
     }
+}
+
+// --- AUTH ACTIONS ---
+export async function login(prevState: string | undefined, formData: FormData) {
+  try {
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+      return { error: 'Por favor, introduce el correo y la contraseña.' };
+    }
+
+    const users = await readData<User>('users.json');
+    const user = users.find((u) => u.email === email);
+
+    if (!user) {
+      return { error: 'Usuario no encontrado.' };
+    }
+
+    if (user.password !== password) {
+      return { error: 'Contraseña incorrecta.' };
+    }
+  } catch (error) {
+    console.error(error);
+    return { error: 'Ocurrió un error inesperado.' };
+  }
+
+  redirect('/dashboard');
 }
 
 

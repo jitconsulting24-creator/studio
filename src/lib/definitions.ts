@@ -121,3 +121,8 @@ export interface ClientRequirements {
   attachments?: any[];
   submittedAt: Date;
 }
+
+export interface User {
+  email: string;
+  password?: string;
+}

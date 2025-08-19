@@ -1,4 +1,5 @@
 'use client';
+import { useFormState, useFormStatus } from 'react-dom';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,9 +11,43 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FolderKanban } from 'lucide-react';
+import { FolderKanban, Loader2 } from 'lucide-react';
+import { login } from '@/lib/actions';
+import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
+
+function LoginButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Iniciando Sesión...
+        </>
+      ) : (
+        'Iniciar Sesión'
+      )}
+    </Button>
+  );
+}
+
 
 export default function LoginPage() {
+  const [state, dispatch] = useFormState(login, undefined);
+  const { toast } = useToast();
+
+   useEffect(() => {
+    if (state?.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error de Inicio de Sesión',
+        description: state.error,
+      });
+    }
+  }, [state, toast]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
@@ -31,28 +66,31 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4">
+            <form action={dispatch} className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Correo Electrónico</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="admin@example.com"
                   required
+                  defaultValue="admin@example.com"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Contraseña</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required defaultValue="password123" />
               </div>
-              <Link href="/dashboard" legacyBehavior>
-                <Button type="submit" className="w-full">
-                  Iniciar Sesión
-                </Button>
-              </Link>
-            </div>
+              <LoginButton />
+               {state?.error && (
+                <p className="text-sm font-medium text-destructive text-center">
+                  {state.error}
+                </p>
+              )}
+            </form>
           </CardContent>
         </Card>
       </div>
