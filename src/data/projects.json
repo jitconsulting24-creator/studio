@@ -1,3 +1,4 @@
+
 [
   {
     "id": "1",
@@ -209,7 +210,18 @@
         "description": "Módulo para el motor de informes.",
         "status": "En Revisión",
         "deadline": "2024-06-01T00:00:00.000Z",
-        "parts": [],
+        "parts": [
+          {
+            "id": "part-informe-1",
+            "name": "Generación de PDF",
+            "status": "En Revisión"
+          },
+          {
+            "id": "part-informe-2",
+            "name": "Exportación a CSV",
+            "status": "Completado"
+          }
+        ],
         "stages": [],
         "requirements": [],
         "reviews": [],
