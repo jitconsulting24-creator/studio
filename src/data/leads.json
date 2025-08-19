@@ -1,0 +1,21 @@
+
+[
+  {
+    "id": "lead-1",
+    "name": "Ana Pérez",
+    "email": "ana.perez@example.com",
+    "company": "Tech Solutions",
+    "status": "Nuevo",
+    "createdAt": "2024-05-01T00:00:00.000Z",
+    "formLink": "/leads/lead-1/form"
+  },
+  {
+    "id": "lead-2",
+    "name": "Carlos Gómez",
+    "email": "carlos.gomez@example.com",
+    "company": "Innovate Corp",
+    "status": "Contactado",
+    "createdAt": "2024-05-05T00:00:00.000Z",
+    "formLink": "/leads/lead-2/form"
+  }
+]

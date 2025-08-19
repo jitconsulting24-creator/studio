@@ -1,11 +1,12 @@
 
 'use client';
-import { useState } from 'react';
-import { DUMMY_LEADS, DUMMY_CLIENT_REQUIREMENTS } from '@/lib/data';
-import type { Lead } from '@/lib/definitions';
+import { useState, useEffect } from 'react';
+import { getClientRequirements, getLeads } from '@/lib/data';
+import type { Lead, ClientRequirements } from '@/lib/definitions';
 import PageHeader from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Mail, Copy, Eye, Loader2, FileText } from 'lucide-react';
+import { PlusCircle, Mail, Copy, Eye, Loader2 } from 'lucide-react';
+import FileText from '@/components/shared/FileText';
 import {
   Table,
   TableBody,
@@ -30,14 +31,29 @@ import { createLead } from '@/lib/actions';
 import { CreateLeadDialog } from '@/components/leads/create-lead-dialog';
 
 export default function LeadsPage() {
-  const [leads, setLeads] = useState<Lead[]>(DUMMY_LEADS);
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [requirements, setRequirements] = useState<ClientRequirements[]>([]);
   const [isCreateLeadDialogOpen, setIsCreateLeadDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      const [leadsData, reqsData] = await Promise.all([getLeads(), getClientRequirements()]);
+      setLeads(leadsData);
+      setRequirements(reqsData);
+      setIsLoading(false);
+    }
+    loadData();
+  }, []);
 
   const handleCreateLead = async (leadData: Omit<Lead, 'id' | 'createdAt' | 'formLink' | 'status'>) => {
     const result = await createLead(leadData);
     if (result.success && result.lead) {
-        setLeads((prev) => [result.lead!, ...prev]);
+        // Optimistically update UI or re-fetch
+        const updatedLeads = await getLeads();
+        setLeads(updatedLeads);
         toast({
             title: 'Lead Creado',
             description: 'Se ha creado un nuevo lead y se ha añadido a la lista.',
@@ -62,7 +78,15 @@ export default function LeadsPage() {
   };
 
   const hasSubmittedRequirements = (leadId: string) => {
-      return !!DUMMY_CLIENT_REQUIREMENTS.find(req => req.leadId === leadId);
+      return !!requirements.find(req => req.leadId === leadId);
+  }
+
+  if(isLoading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )
   }
 
   return (

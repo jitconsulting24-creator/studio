@@ -1,12 +1,13 @@
 
-import { DUMMY_CLIENT_REQUIREMENTS, DUMMY_LEADS } from '@/lib/data';
+
+import { getClientRequirements, getLeadById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
-import { Check, Link as LinkIcon, User, Building, Mail, Phone, List, ListChecks, Palette, File, Briefcase } from 'lucide-react';
+import { Check, Link as LinkIcon, User, Building, Mail, Phone, List, ListChecks, Palette, FileText, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 
 const RequirementSection = ({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) => (
@@ -46,9 +47,9 @@ const RequirementItem = ({ label, value, isList = false, isLink = false }: { lab
     )
 }
 
-export default function LeadRequirementsPage({ params }: { params: { leadId: string } }) {
-  const lead = DUMMY_LEADS.find((l) => l.id === params.leadId);
-  const requirements = DUMMY_CLIENT_REQUIREMENTS.find(r => r.leadId === params.leadId);
+export default async function LeadRequirementsPage({ params }: { params: { leadId: string } }) {
+  const lead = await getLeadById(params.leadId);
+  const requirements = await getRequirementsByLeadId(params.leadId);
 
   if (!lead || !requirements) {
     notFound();
@@ -97,7 +98,7 @@ export default function LeadRequirementsPage({ params }: { params: { leadId: str
                  <RequirementItem label="Mantenimiento" value={requirements.contentAndStrategy.maintenance} />
             </RequirementSection>
 
-            <RequirementSection title="Archivos Adjuntos" icon={<File className="h-6 w-6 text-primary" />}>
+            <RequirementSection title="Archivos Adjuntos" icon={<FileText className="h-6 w-6 text-primary" />}>
                 {requirements.attachments && requirements.attachments.length > 0 ? (
                     <p>Archivos adjuntos aquí.</p> // Logica para mostrar archivos
                 ) : (

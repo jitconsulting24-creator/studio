@@ -2,13 +2,40 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { DUMMY_PROJECTS, DUMMY_LEADS, DUMMY_CLIENT_REQUIREMENTS } from './data';
-import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent } from './definitions';
-import { redirect } from 'next/navigation';
+import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent, ClientRequirements } from './definitions';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+const dataFilePath = (filename: string) => path.join(process.cwd(), 'src', 'data', filename);
+
+async function readData<T>(filename: string): Promise<T[]> {
+    try {
+        const jsonString = await fs.readFile(dataFilePath(filename), 'utf-8');
+        return JSON.parse(jsonString) as T[];
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return []; // Retorna un array vacío si el archivo no existe
+        }
+        console.error(`Error reading ${filename}:`, error);
+        throw error;
+    }
+}
+
+async function writeData<T>(filename: string, data: T[]): Promise<void> {
+    try {
+        const jsonString = JSON.stringify(data, null, 2);
+        await fs.writeFile(dataFilePath(filename), jsonString, 'utf-8');
+    } catch (error) {
+        console.error(`Error writing to ${filename}:`, error);
+        throw error;
+    }
+}
+
 
 // --- PROJECT ACTIONS ---
 
 export async function addProject(projectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) {
+    const projects = await readData<Project>('projects.json');
     const newProject: Project = {
         ...projectData,
         id: `proj-${Date.now()}`,
@@ -22,9 +49,12 @@ export async function addProject(projectData: Omit<Project, 'id' | 'shareableLin
         changeRequests: [],
         initialRequirements: [],
         projectDocuments: [],
+        startDate: new Date(projectData.startDate),
+        deadline: new Date(projectData.deadline),
     };
     
-    DUMMY_PROJECTS.push(newProject);
+    projects.push(newProject);
+    await writeData('projects.json', projects);
     revalidatePath('/dashboard');
     return { success: true, project: newProject };
 }
@@ -33,13 +63,15 @@ export async function addProject(projectData: Omit<Project, 'id' | 'shareableLin
 // --- MODULE ACTIONS ---
 
 export async function addModule(projectId: string, moduleData: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const newModule: Module = {
         ...moduleData,
         id: `mod-${Date.now()}`,
         status: 'Pendiente',
+        deadline: new Date(moduleData.deadline),
         parts: [],
         stages: [],
         requirements: [],
@@ -55,18 +87,21 @@ export async function addModule(projectId: string, moduleData: Omit<Module, 'id'
         actor: 'admin'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, module: newModule };
 }
 
 export async function addModulesFromAI(projectId: string, newModules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
     
     const modulesToAdd: Module[] = newModules.map(m => ({
         ...m,
         id: `mod-${Date.now()}-${Math.random()}`,
         status: 'Pendiente',
+        deadline: new Date(m.deadline),
         parts: [],
         stages: [],
         requirements: [],
@@ -82,14 +117,17 @@ export async function addModulesFromAI(projectId: string, newModules: Omit<Modul
         actor: 'sistema'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, modules: modulesToAdd };
 }
 
 export async function editModule(projectId: string, updatedModule: Module) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
+    updatedModule.deadline = new Date(updatedModule.deadline);
     project.modules = project.modules.map(m => m.id === updatedModule.id ? updatedModule : m);
     project.timelineEvents.unshift({
         eventDescription: `Módulo actualizado: "${updatedModule.name}"`,
@@ -97,12 +135,14 @@ export async function editModule(projectId: string, updatedModule: Module) {
         actor: 'admin'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, module: updatedModule };
 }
 
 export async function deleteModule(projectId: string, moduleId: string) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const moduleName = project.modules.find(m => m.id === moduleId)?.name || 'Desconocido';
@@ -113,12 +153,14 @@ export async function deleteModule(projectId: string, moduleId: string) {
         actor: 'admin'
     });
     
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true };
 }
 
 export async function updateModuleParts(projectId: string, moduleId: string, updatedParts: Part[]) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const module = project.modules.find(m => m.id === moduleId);
@@ -132,6 +174,7 @@ export async function updateModuleParts(projectId: string, moduleId: string, upd
         actor: 'admin'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true };
 }
@@ -145,7 +188,8 @@ export async function addChangeRequest(projectId: string, formData: FormData) {
     return { error: 'Los detalles de la solicitud son obligatorios.' };
   }
 
-  const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+  const projects = await readData<Project>('projects.json');
+  const project = projects.find(p => p.id === projectId);
 
   if (project) {
       const newRequest: ChangeRequest = {
@@ -156,13 +200,14 @@ export async function addChangeRequest(projectId: string, formData: FormData) {
       };
       project.changeRequests.push(newRequest);
       
-      const timelineEvent = {
+      const timelineEvent: TimelineEvent = {
           eventDescription: `El cliente ha enviado una nueva solicitud de cambio.`,
           eventDate: new Date(),
           actor: 'cliente' as const
       };
       project.timelineEvents.unshift(timelineEvent);
 
+      await writeData('projects.json', projects);
       revalidatePath(`/client-view/${project.shareableLinkId}`);
       revalidatePath(`/dashboard/projects/${projectId}`);
   } else {
@@ -173,7 +218,8 @@ export async function addChangeRequest(projectId: string, formData: FormData) {
 }
 
 export async function updateChangeRequestStatus(projectId: string, requestId: string, status: ChangeRequestStatus) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const request = project.changeRequests.find(r => r.id === requestId);
@@ -186,6 +232,7 @@ export async function updateChangeRequestStatus(projectId: string, requestId: st
         actor: 'admin'
     });
     
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true };
 }
@@ -194,7 +241,8 @@ export async function updateChangeRequestStatus(projectId: string, requestId: st
 // --- REQUIREMENT ACTIONS ---
 
 export async function addRequirement(projectId: string, requirementData: Omit<Requirement, 'id'>) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const newRequirement: Requirement = {
@@ -209,12 +257,14 @@ export async function addRequirement(projectId: string, requirementData: Omit<Re
         actor: 'admin'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, requirement: newRequirement };
 }
 
 export async function editRequirement(projectId: string, updatedRequirement: Requirement) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     project.initialRequirements = project.initialRequirements.map(r => r.id === updatedRequirement.id ? updatedRequirement : r);
@@ -224,12 +274,14 @@ export async function editRequirement(projectId: string, updatedRequirement: Req
         actor: 'admin'
     });
     
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, requirement: updatedRequirement };
 }
 
 export async function deleteRequirement(projectId: string, requirementId: string) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
 if (!project) return { error: 'Proyecto no encontrado.' };
 
     const requirementTitle = project.initialRequirements.find(r => r.id === requirementId)?.title || 'Desconocido';
@@ -241,6 +293,7 @@ if (!project) return { error: 'Proyecto no encontrado.' };
         actor: 'admin'
     });
     
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true };
 }
@@ -248,7 +301,8 @@ if (!project) return { error: 'Proyecto no encontrado.' };
 // --- DOCUMENT ACTIONS ---
 
 export async function addDocument(projectId: string, documentData: Omit<Document, 'id'>) {
-    const project = DUMMY_PROJECTS.find(p => p.id === projectId);
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
     if (!project) return { error: 'Proyecto no encontrado.' };
 
     const newDocument: Document = {
@@ -267,6 +321,7 @@ export async function addDocument(projectId: string, documentData: Omit<Document
         actor: 'admin'
     });
 
+    await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
     return { success: true, document: newDocument };
 }
@@ -277,7 +332,7 @@ export async function createLead(leadData: Omit<Lead, 'id' | 'createdAt' | 'form
     if (!leadData.name || !leadData.email) {
         return { error: 'El nombre y el correo electrónico son obligatorios.' };
     }
-
+    const leads = await readData<Lead>('leads.json');
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
       name: leadData.name,
@@ -287,24 +342,32 @@ export async function createLead(leadData: Omit<Lead, 'id' | 'createdAt' | 'form
       createdAt: new Date(),
       formLink: `/leads/lead-${Date.now()}/form`,
     };
-    DUMMY_LEADS.unshift(newLead);
+    leads.unshift(newLead);
+    await writeData('leads.json', leads);
     revalidatePath('/dashboard/leads');
     return { success: true, lead: newLead };
 }
 
 export async function submitLeadForm(leadId: string, formData: any) {
-    const lead = DUMMY_LEADS.find(l => l.id === leadId);
+    const leads = await readData<Lead>('leads.json');
+    const requirements = await readData<ClientRequirements>('client-requirements.json');
+
+    const lead = leads.find(l => l.id === leadId);
     if (lead) {
         lead.status = 'Propuesta Enviada';
         lead.name = formData.contactInfo.name;
         lead.company = formData.contactInfo.company;
         lead.email = formData.contactInfo.email;
 
-        DUMMY_CLIENT_REQUIREMENTS.push({
+        requirements.push({
             leadId,
             submittedAt: new Date(),
             ...formData,
         });
+        
+        await writeData('leads.json', leads);
+        await writeData('client-requirements.json', requirements);
+
         revalidatePath('/dashboard/leads');
     } else {
         return { error: 'Lead no encontrado' };

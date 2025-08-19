@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,9 +18,10 @@ import {
   Smartphone,
   AppWindow,
   PencilRuler,
+  Loader2,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { DUMMY_LEADS } from '@/lib/data';
+import { useParams, notFound } from 'next/navigation';
+import { getLeadById } from '@/lib/data';
 import { Label } from '@/components/ui/label';
 import ProjectRequirementsForm from '@/components/leads/project-requirements-form';
 
@@ -55,15 +56,31 @@ const PROJECT_TYPES = [
 export default function LeadFormPage() {
   const params = useParams();
   const leadId = params.leadId as string;
-
-  const lead = DUMMY_LEADS.find((l) => l.id === leadId);
-
+  
+  const [leadExists, setLeadExists] = useState<boolean | null>(null);
   const [projectType, setProjectType] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  if (!lead) {
-    // En una app real, se obtendrían los datos del lead. Aquí solo comprobamos la existencia.
-    // return notFound();
+  useEffect(() => {
+    async function checkLead() {
+        if (leadId) {
+            const lead = await getLeadById(leadId);
+            setLeadExists(!!lead);
+        }
+    }
+    checkLead();
+  }, [leadId]);
+
+  if (leadExists === null) {
+      return (
+          <div className="flex min-h-screen items-center justify-center bg-background p-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
+      );
+  }
+
+  if (leadExists === false) {
+    notFound();
   }
 
   if (isSubmitted) {
