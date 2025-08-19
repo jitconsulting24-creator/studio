@@ -1,20 +1,25 @@
-import type { Project } from '@/lib/definitions';
-import { FolderKanban, CheckCircle, Clock } from 'lucide-react';
+import type { Project, Part, Requirement, Document } from '@/lib/definitions';
+import { FolderKanban } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Progress } from '../ui/progress';
+import ProjectHeader from '../project/project-header';
+import ModulesAccordion from '../project/modules-accordion';
+import TimelineView from '../project/timeline-view';
+import ProjectDocumentsCard from '../project/project-documents-card';
+import RequirementsCard from '../project/requirements-card';
+import ChangeRequestsList from '../project/change-requests-list';
 import ChangeRequestForm from './change-request-form';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+
+
+// Dummy server actions for client view (read-only)
+const noOpPromise = async () => { /* No operation */ };
+const noOpPromiseWithArgs = async (...args: any[]) => { /* No operation */ };
+
 
 export default function ClientPortalView({ project }: { project: Project }) {
-  const completedModules = project.modules.filter(m => m.status === 'Completado').length;
-  const totalModules = project.modules.length;
-  const progress = totalModules > 0 ? (completedModules / totalModules) * 100 : 0;
-
+  
   return (
     <>
-      <header className="bg-card border-b py-4">
+      <header className="bg-card border-b py-4 sticky top-0 z-40">
         <div className="container mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
                 <FolderKanban className="h-8 w-8 text-primary" />
@@ -24,63 +29,47 @@ export default function ClientPortalView({ project }: { project: Project }) {
         </div>
       </header>
 
-      <main className="container mx-auto py-8 space-y-8">
-        <div>
-          <h2 className="text-3xl font-bold">{project.name}</h2>
-          <p className="text-muted-foreground mt-1">{project.description}</p>
-        </div>
+      <main className="container mx-auto py-8">
+         <div className="space-y-8">
+            <ProjectHeader project={project} isClientView={true} />
+            
+            <div className="grid gap-8 lg:grid-cols-3 lg:items-start">
+                <div className="lg:col-span-2 space-y-8">
+                <ModulesAccordion 
+                    projectId={project.id}
+                    modules={project.modules} 
+                    onAddModule={noOpPromiseWithArgs}
+                    onEditModule={noOpPromiseWithArgs}
+                    onDeleteModule={noOpPromiseWithArgs}
+                    onModulePartsUpdate={noOpPromiseWithArgs}
+                    isClientView={true}
+                />
+                <TimelineView events={project.timelineEvents} />
+                </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Progreso del Proyecto</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex justify-between text-sm text-muted-foreground mb-1">
-                        <span>Progreso General</span>
-                        <span>{Math.round(progress)}%</span>
-                    </div>
-                    <Progress value={progress} aria-label={`${Math.round(progress)}% completado`} />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        {completedModules} de {totalModules} módulos completados.
-                    </p>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Fechas Clave</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                    <p className="text-sm text-muted-foreground flex items-center"><Clock className="mr-2 h-4 w-4" /> Fecha de Inicio: {format(project.startDate, 'PPP', { locale: es })}</p>
-                    <p className="text-sm text-muted-foreground flex items-center"><CheckCircle className="mr-2 h-4 w-4" /> Fecha Límite Prevista: {format(project.deadline, 'PPP', { locale: es })}</p>
-                </CardContent>
-            </Card>
-        </div>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Resumen de Módulos</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {project.modules.length > 0 ? (
-                    <ul className="space-y-3">
-                        {project.modules.map(module => (
-                            <li key={module.id} className="flex items-center justify-between p-3 rounded-md bg-muted/50">
-                                <span className="font-medium">{module.name}</span>
-                                <StatusBadge status={module.status} />
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">Los módulos se listarán aquí a medida que se planifiquen.</p>
-                )}
-            </CardContent>
-        </Card>
-
-        <ChangeRequestForm projectId={project.id} />
+                <div className="space-y-8">
+                <ProjectDocumentsCard 
+                    documents={project.projectDocuments || []} 
+                    onAddDocument={noOpPromiseWithArgs}
+                    isClientView={true}
+                    />
+                <RequirementsCard 
+                    projectId={project.id}
+                    requirements={project.initialRequirements} 
+                    onAddModules={noOpPromiseWithArgs}
+                    projectDescription={project.description}
+                    onAddRequirement={noOpPromiseWithArgs}
+                    onEditRequirement={noOpPromiseWithArgs}
+                    onDeleteRequirement={noOpPromiseWithArgs}
+                    isClientView={true}
+                />
+                <ChangeRequestForm projectId={project.id} />
+                </div>
+            </div>
+            </div>
       </main>
       
-      <footer className="text-center py-6 text-sm text-muted-foreground">
+      <footer className="text-center py-6 text-sm text-muted-foreground border-t">
         <p>&copy; {new Date().getFullYear()} ProPlanner. Todos los derechos reservados.</p>
       </footer>
     </>

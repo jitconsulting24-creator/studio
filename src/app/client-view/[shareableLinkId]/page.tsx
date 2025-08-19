@@ -8,11 +8,12 @@ export default async function ClientViewPage({
 }: {
   params: { shareableLinkId: string };
 }) {
-  const project = await getProjectById(params.shareableLinkId);
+  const projects = await getProjectById(params.shareableLinkId, true);
 
-  if (!project) {
+  if (!projects || projects.length === 0) {
     notFound();
   }
+  const project = projects[0];
 
   return (
     <div className="bg-background min-h-screen">

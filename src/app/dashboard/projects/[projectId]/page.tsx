@@ -8,11 +8,12 @@ export default async function ProjectDetailsPage({
 }: {
   params: { projectId: string };
 }) {
-  const project = await getProjectById(params.projectId);
+  const projects = await getProjectById(params.projectId);
 
-  if (!project) {
+  if (!projects || projects.length === 0) {
     notFound();
   }
+  const project = projects[0];
 
   return (
     <div className="container mx-auto">

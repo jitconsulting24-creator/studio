@@ -12,9 +12,10 @@ import { useToast } from '@/hooks/use-toast';
 interface ModulePartsManagerProps {
   parts: Part[];
   onPartsChange: (updatedParts: Part[]) => Promise<void>;
+  isClientView?: boolean;
 }
 
-export default function ModulePartsManager({ parts, onPartsChange }: ModulePartsManagerProps) {
+export default function ModulePartsManager({ parts, onPartsChange, isClientView = false }: ModulePartsManagerProps) {
   const [currentParts, setCurrentParts] = useState(parts);
   const [newPartName, setNewPartName] = useState('');
   const [editingPartId, setEditingPartId] = useState<string | null>(null);
@@ -88,8 +89,9 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
               checked={part.status === 'Completado'}
               onCheckedChange={() => handleToggleStatus(part.id)}
               aria-label={`Marcar '${part.name}' como ${part.status === 'Completado' ? 'pendiente' : 'completado'}`}
+              disabled={isClientView && part.status === 'Completado'}
             />
-            {editingPartId === part.id ? (
+            {editingPartId === part.id && !isClientView ? (
               <Input
                 type="text"
                 value={editingPartName}
@@ -100,7 +102,7 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
             ) : (
               <label
                 htmlFor={`part-${part.id}`}
-                className={`flex-1 cursor-pointer ${
+                className={`flex-1 ${!isClientView ? 'cursor-pointer' : ''} ${
                   part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
                 }`}
               >
@@ -108,42 +110,48 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
               </label>
             )}
 
-            {editingPartId === part.id ? (
-              <>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleEditPart}>
-                  <Save className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={cancelEditing}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEditing(part)}>
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeletePart(part.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </>
+            {!isClientView && (
+                <>
+                    {editingPartId === part.id ? (
+                    <>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleEditPart}>
+                        <Save className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={cancelEditing}>
+                        <X className="h-4 w-4" />
+                        </Button>
+                    </>
+                    ) : (
+                    <>
+                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => startEditing(part)}>
+                        <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => handleDeletePart(part.id)}>
+                        <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </>
+                    )}
+                </>
             )}
           </li>
         ))}
       </ul>
-      <div className="flex gap-2 pt-2">
-        <Input
-          type="text"
-          placeholder="Añadir nueva tarea..."
-          value={newPartName}
-          onChange={(e) => setNewPartName(e.target.value)}
-          className="h-8 flex-1"
-          onKeyDown={(e) => e.key === 'Enter' && handleAddPart()}
-        />
-        <Button size="sm" onClick={handleAddPart}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Añadir
-        </Button>
-      </div>
+      {!isClientView && (
+          <div className="flex gap-2 pt-2">
+            <Input
+            type="text"
+            placeholder="Añadir nueva tarea..."
+            value={newPartName}
+            onChange={(e) => setNewPartName(e.target.value)}
+            className="h-8 flex-1"
+            onKeyDown={(e) => e.key === 'Enter' && handleAddPart()}
+            />
+            <Button size="sm" onClick={handleAddPart}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Añadir
+            </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -12,8 +12,11 @@ async function readData<T>(filename: string): Promise<T[]> {
     const jsonString = await fs.readFile(dataFilePath(filename), 'utf-8');
     // Ensure dates are parsed correctly
     return JSON.parse(jsonString, (key, value) => {
-      if (key.endsWith('Date') || key.endsWith('At')) {
-        return new Date(value);
+      if (value && (key.endsWith('Date') || key.endsWith('At'))) {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          return date;
+        }
       }
       return value;
     }) as T[];
@@ -40,10 +43,14 @@ export async function getClientRequirements(): Promise<ClientRequirements[]> {
   return await readData<ClientRequirements>('client-requirements.json');
 }
 
-export async function getProjectById(projectId: string): Promise<Project | undefined> {
+export async function getProjectById(id: string, byShareableLink: boolean = false): Promise<Project[] | undefined> {
     const projects = await getProjects();
-    return projects.find(p => p.id === projectId);
+    if (byShareableLink) {
+        return projects.filter(p => p.shareableLinkId === id);
+    }
+    return projects.filter(p => p.id === id);
 }
+
 
 export async function getLeadById(leadId: string): Promise<Lead | undefined> {
     const leads = await getLeads();

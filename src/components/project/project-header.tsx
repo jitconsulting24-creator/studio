@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-export default function ProjectHeader({ project }: { project: Project }) {
+export default function ProjectHeader({ project, isClientView = false }: { project: Project, isClientView?: boolean }) {
   const { toast } = useToast();
 
   const copyToClipboard = () => {
@@ -37,28 +37,30 @@ export default function ProjectHeader({ project }: { project: Project }) {
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
-                <p>Fecha de Inicio: {format(project.startDate, 'PPP', { locale: es })}</p>
-                <p>Fecha Límite: {format(project.deadline, 'PPP', { locale: es })}</p>
+                <p>Fecha de Inicio: {format(new Date(project.startDate), 'PPP', { locale: es })}</p>
+                <p>Fecha Límite: {format(new Date(project.deadline), 'PPP', { locale: es })}</p>
             </div>
           </CardContent>
         </Card>
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Enlace del Portal del Cliente</CardTitle>
-                <Clipboard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="flex items-center gap-2">
-                <Link href={`/client-view/${project.shareableLinkId}`} target="_blank" className="flex-1">
-                  <Button variant="outline" className="w-full justify-start text-muted-foreground truncate">
-                    <LinkIcon className="mr-2 h-4 w-4" />
-                    /client-view/...
-                  </Button>
-                </Link>
-                <Button size="icon" variant="ghost" onClick={copyToClipboard}>
-                    <Copy className="h-4 w-4" />
-                </Button>
-            </CardContent>
-        </Card>
+        {!isClientView && (
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Enlace del Portal del Cliente</CardTitle>
+                    <Clipboard className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="flex items-center gap-2">
+                    <Link href={`/client-view/${project.shareableLinkId}`} target="_blank" className="flex-1">
+                    <Button variant="outline" className="w-full justify-start text-muted-foreground truncate">
+                        <LinkIcon className="mr-2 h-4 w-4" />
+                        /client-view/...
+                    </Button>
+                    </Link>
+                    <Button size="icon" variant="ghost" onClick={copyToClipboard}>
+                        <Copy className="h-4 w-4" />
+                    </Button>
+                </CardContent>
+            </Card>
+        )}
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ interface RequirementsCardProps {
     onAddRequirement: (requirement: Omit<Requirement, 'id'>) => Promise<void>;
     onEditRequirement: (requirement: Requirement) => Promise<void>;
     onDeleteRequirement: (requirementId: string) => Promise<void>;
+    isClientView?: boolean;
 }
 
 export default function RequirementsCard({
@@ -36,7 +37,8 @@ export default function RequirementsCard({
     projectDescription,
     onAddRequirement,
     onEditRequirement,
-    onDeleteRequirement
+    onDeleteRequirement,
+    isClientView = false,
 }: RequirementsCardProps) {
   const [isRequirementDialogOpen, setIsRequirementDialogOpen] = useState(false);
   const [editingRequirement, setEditingRequirement] = useState<Requirement | null>(null);
@@ -71,15 +73,17 @@ export default function RequirementsCard({
                     <ClipboardList className="h-6 w-6 text-primary" />
                     <CardTitle>Requisitos Iniciales</CardTitle>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleOpenDialog()}>
-                        <PlusCircle className="mr-2 h-4 w-4" /> Añadir
-                    </Button>
-                    <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />
-                </div>
+                {!isClientView && (
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => handleOpenDialog()}>
+                            <PlusCircle className="mr-2 h-4 w-4" /> Añadir
+                        </Button>
+                        <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />
+                    </div>
+                )}
             </div>
             <CardDescription>
-                Gestione los requisitos del proyecto y use la IA para crear módulos basados en ellos.
+                {isClientView ? 'Documentos de referencia del proyecto.' : 'Gestione los requisitos del proyecto y use la IA para crear módulos basados en ellos.'}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,7 +98,8 @@ export default function RequirementsCard({
                                     <ExternalLink className="h-4 w-4" />
                                 </Link>
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(req)}>
+                           {!isClientView && <>
+                             <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(req)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
                             <AlertDialog>
@@ -119,6 +124,7 @@ export default function RequirementsCard({
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
+                           </>}
                         </div>
                     </li>
                     ))}
@@ -127,7 +133,7 @@ export default function RequirementsCard({
                 <p className="text-sm text-muted-foreground text-center py-4">No se han listado requisitos iniciales.</p>
             )}
         </CardContent>
-        {isRequirementDialogOpen && (
+        {isRequirementDialogOpen && !isClientView && (
              <RequirementDialog
                 isOpen={isRequirementDialogOpen}
                 onClose={() => {

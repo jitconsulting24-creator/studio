@@ -1,2 +1,46 @@
-
-[]
+[
+  {
+    "leadId": "lead-1755562935650",
+    "submittedAt": "2025-08-19T00:27:17.853Z",
+    "contactInfo": {
+      "name": "ss",
+      "company": "s",
+      "email": "ss",
+      "phone": "ss"
+    },
+    "projectInfo": {
+      "projectName": "s",
+      "projectIdea": "ss",
+      "targetAudience": "s",
+      "mainGoals": [
+        "s",
+        "s",
+        "s"
+      ],
+      "competitors": "s",
+      "budget": "15k-30k"
+    },
+    "scopeAndFeatures": {
+      "platforms": [],
+      "commonFeatures": [
+        "Formulario de Contacto Avanzado"
+      ],
+      "otherFeatures": []
+    },
+    "designAndUX": {
+      "hasBrandIdentity": "no",
+      "brandFiles": [],
+      "designInspirations": [
+        "",
+        ""
+      ],
+      "lookAndFeel": ""
+    },
+    "contentAndStrategy": {
+      "contentCreation": "s",
+      "marketingPlan": "ss",
+      "maintenance": "ss"
+    },
+    "attachments": []
+  }
+]

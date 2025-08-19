@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 interface ProjectDocumentsCardProps {
     documents: Document[];
     onAddDocument: (document: Omit<Document, 'id'>) => Promise<void>;
+    isClientView?: boolean;
 }
 
 const AddDocumentDialog = ({ onAdd, onCancel }: { onAdd: (doc: Omit<Document, 'id'>) => Promise<void>, onCancel: () => void }) => {
@@ -56,7 +57,7 @@ const AddDocumentDialog = ({ onAdd, onCancel }: { onAdd: (doc: Omit<Document, 'i
     )
 }
 
-export default function ProjectDocumentsCard({ documents, onAddDocument }: ProjectDocumentsCardProps) {
+export default function ProjectDocumentsCard({ documents, onAddDocument, isClientView = false }: ProjectDocumentsCardProps) {
     const [isAdding, setIsAdding] = useState(false);
 
     const handleAddDocument = async (doc: Omit<Document, 'id'>) => {
@@ -72,9 +73,11 @@ export default function ProjectDocumentsCard({ documents, onAddDocument }: Proje
                     <Folder className="h-6 w-6 text-primary" />
                     <CardTitle>Documentos del Proyecto</CardTitle>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)} disabled={isAdding}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Añadir
-                </Button>
+                {!isClientView && (
+                    <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)} disabled={isAdding}>
+                        <PlusCircle className="mr-2 h-4 w-4" /> Añadir
+                    </Button>
+                )}
             </div>
             <CardDescription>
                 Brief, observaciones y otros documentos generales del proyecto.
