@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ModulePartsManagerProps {
   parts: Part[];
-  onPartsChange: (updatedParts: Part[]) => Promise<void>;
+  onPartsChange?: (updatedParts: Part[]) => Promise<void>;
   isClientView?: boolean;
 }
 
@@ -24,11 +24,13 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
 
   const triggerChange = async (updatedParts: Part[]) => {
     setCurrentParts(updatedParts);
-    await onPartsChange(updatedParts);
-    toast({
-        title: 'Tareas Actualizadas',
-        description: 'La lista de tareas ha sido actualizada.'
-    });
+    if (onPartsChange) {
+        await onPartsChange(updatedParts);
+        toast({
+            title: 'Tareas Actualizadas',
+            description: 'La lista de tareas ha sido actualizada.'
+        });
+    }
   };
 
   const handleAddPart = () => {
@@ -89,7 +91,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
               checked={part.status === 'Completado'}
               onCheckedChange={() => handleToggleStatus(part.id)}
               aria-label={`Marcar '${part.name}' como ${part.status === 'Completado' ? 'pendiente' : 'completado'}`}
-              disabled={isClientView && part.status === 'Completado'}
+              disabled={isClientView || !onPartsChange}
             />
             {editingPartId === part.id && !isClientView ? (
               <Input
@@ -102,7 +104,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
             ) : (
               <label
                 htmlFor={`part-${part.id}`}
-                className={`flex-1 ${!isClientView ? 'cursor-pointer' : ''} ${
+                className={`flex-1 ${!isClientView && onPartsChange ? 'cursor-pointer' : ''} ${
                   part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
                 }`}
               >
@@ -110,7 +112,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
               </label>
             )}
 
-            {!isClientView && (
+            {!isClientView && onPartsChange && (
                 <>
                     {editingPartId === part.id ? (
                     <>
@@ -136,7 +138,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
           </li>
         ))}
       </ul>
-      {!isClientView && (
+      {!isClientView && onPartsChange && (
           <div className="flex gap-2 pt-2">
             <Input
             type="text"

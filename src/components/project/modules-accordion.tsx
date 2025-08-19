@@ -32,10 +32,10 @@ import ModulePartsManager from './module-parts-manager';
 interface ModulesAccordionProps {
   projectId: string;
   modules: Module[];
-  onAddModule: (module: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => Promise<void>;
-  onEditModule: (module: Module) => Promise<void>;
-  onDeleteModule: (moduleId: string) => Promise<void>;
-  onModulePartsUpdate: (moduleId: string, updatedParts: Part[]) => Promise<void>;
+  onAddModule?: (module: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => Promise<void>;
+  onEditModule?: (module: Module) => Promise<void>;
+  onDeleteModule?: (moduleId: string) => Promise<void>;
+  onModulePartsUpdate?: (moduleId: string, updatedParts: Part[]) => Promise<void>;
   isClientView?: boolean;
 }
 
@@ -45,6 +45,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (moduleId: string) => {
+      if (!onDeleteModule) return;
       setIsDeleting(moduleId);
       await onDeleteModule(moduleId);
       setIsDeleting(null);
@@ -54,7 +55,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
     <Card>
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle>Módulos de Desarrollo</CardTitle>
-        {!isClientView && (
+        {!isClientView && onAddModule && (
             <Button variant="outline" size="sm" onClick={() => setIsAddModuleDialogOpen(true)}>
                 <PlusCircle className="mr-2 h-4 w-4" /> Añadir Módulo
             </Button>
@@ -78,7 +79,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
                         <span>
                             Fecha Límite: {format(new Date(module.deadline), 'PPP', { locale: es })}
                         </span>
-                        {!isClientView && (
+                        {!isClientView && onEditModule && onDeleteModule && (
                             <div className="flex gap-2">
                                 <Button variant="outline" size="sm" onClick={() => setEditingModule(module)}>
                                     <Edit className="mr-2 h-3 w-3" /> Editar
@@ -113,7 +114,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
                           <h4 className="font-semibold text-sm mb-2 flex items-center"><ListTodo className="mr-2 h-4 w-4" /> Tareas</h4>
                           <ModulePartsManager 
                             parts={module.parts}
-                            onPartsChange={(updatedParts) => onModulePartsUpdate(module.id, updatedParts)}
+                            onPartsChange={onModulePartsUpdate ? (updatedParts) => onModulePartsUpdate(module.id, updatedParts) : undefined}
                             isClientView={isClientView}
                           />
                       </div>
@@ -144,7 +145,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
         ) : (
           <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
             <p>Aún no se han añadido módulos.</p>
-            {!isClientView && (
+            {!isClientView && onAddModule && (
                 <Button variant="link" className="mt-2" onClick={() => setIsAddModuleDialogOpen(true)}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Añadir un Módulo
                 </Button>
@@ -152,12 +153,12 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
           </div>
         )}
       </CardContent>
-       {!isClientView && <AddModuleDialog
+       {!isClientView && onAddModule && <AddModuleDialog
         isOpen={isAddModuleDialogOpen}
         onClose={() => setIsAddModuleDialogOpen(false)}
         onAddModule={(moduleData) => onAddModule(moduleData)}
       />}
-      {editingModule && !isClientView && (
+      {editingModule && !isClientView && onEditModule && (
         <EditModuleDialog
             isOpen={!!editingModule}
             onClose={() => setEditingModule(null)}

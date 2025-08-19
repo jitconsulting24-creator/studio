@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { ClipboardList, ExternalLink, PlusCircle, Edit, Trash2, Loader2 } from 'lucide-react';
+import { ClipboardList, ExternalLink, PlusCircle, Edit, Trash2, Loader2, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 import { ModuleGeneratorDialog } from './module-generator-dialog';
 import type { Module, Requirement } from '@/lib/definitions';
@@ -22,11 +22,11 @@ import {
 interface RequirementsCardProps {
     projectId: string;
     requirements: Requirement[];
-    onAddModules: (modules: Omit<Module, 'id' | 'status' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) => Promise<void>;
+    onAddModules?: (modules: Omit<Module, 'id' | 'status' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) => Promise<void>;
     projectDescription: string;
-    onAddRequirement: (requirement: Omit<Requirement, 'id'>) => Promise<void>;
-    onEditRequirement: (requirement: Requirement) => Promise<void>;
-    onDeleteRequirement: (requirementId: string) => Promise<void>;
+    onAddRequirement?: (requirement: Omit<Requirement, 'id'>) => Promise<void>;
+    onEditRequirement?: (requirement: Requirement) => Promise<void>;
+    onDeleteRequirement?: (requirementId: string) => Promise<void>;
     isClientView?: boolean;
 }
 
@@ -51,15 +51,16 @@ export default function RequirementsCard({
 
   const handleSaveRequirement = async (requirementData: Omit<Requirement, 'id'> | Requirement) => {
     if ('id' in requirementData) {
-      await onEditRequirement(requirementData);
+      if (onEditRequirement) await onEditRequirement(requirementData);
     } else {
-      await onAddRequirement(requirementData);
+      if (onAddRequirement) await onAddRequirement(requirementData);
     }
     setIsRequirementDialogOpen(false);
     setEditingRequirement(null);
   };
 
   const handleDelete = async (requirementId: string) => {
+    if (!onDeleteRequirement) return;
     setIsDeleting(requirementId);
     await onDeleteRequirement(requirementId);
     setIsDeleting(null);
@@ -75,10 +76,10 @@ export default function RequirementsCard({
                 </div>
                 {!isClientView && (
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleOpenDialog()}>
+                        {onAddRequirement && <Button variant="outline" size="sm" onClick={() => handleOpenDialog()}>
                             <PlusCircle className="mr-2 h-4 w-4" /> Añadir
-                        </Button>
-                        <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />
+                        </Button>}
+                        {onAddModules && <ModuleGeneratorDialog onAddModules={onAddModules} projectDescription={projectDescription} />}
                     </div>
                 )}
             </div>
@@ -98,7 +99,7 @@ export default function RequirementsCard({
                                     <ExternalLink className="h-4 w-4" />
                                 </Link>
                             </Button>
-                           {!isClientView && <>
+                           {!isClientView && onEditRequirement && onDeleteRequirement && <>
                              <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(req)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
@@ -133,7 +134,7 @@ export default function RequirementsCard({
                 <p className="text-sm text-muted-foreground text-center py-4">No se han listado requisitos iniciales.</p>
             )}
         </CardContent>
-        {isRequirementDialogOpen && !isClientView && (
+        {isRequirementDialogOpen && !isClientView && onAddRequirement && onEditRequirement && (
              <RequirementDialog
                 isOpen={isRequirementDialogOpen}
                 onClose={() => {

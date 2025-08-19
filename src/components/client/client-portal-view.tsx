@@ -1,4 +1,4 @@
-import type { Project, Part, Requirement, Document } from '@/lib/definitions';
+import type { Project } from '@/lib/definitions';
 import { FolderKanban } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
 import ProjectHeader from '../project/project-header';
@@ -6,14 +6,7 @@ import ModulesAccordion from '../project/modules-accordion';
 import TimelineView from '../project/timeline-view';
 import ProjectDocumentsCard from '../project/project-documents-card';
 import RequirementsCard from '../project/requirements-card';
-import ChangeRequestsList from '../project/change-requests-list';
 import ChangeRequestForm from './change-request-form';
-
-
-// Dummy server actions for client view (read-only)
-const noOpPromise = async () => { /* No operation */ };
-const noOpPromiseWithArgs = async (...args: any[]) => { /* No operation */ };
-
 
 export default function ClientPortalView({ project }: { project: Project }) {
   
@@ -38,10 +31,6 @@ export default function ClientPortalView({ project }: { project: Project }) {
                 <ModulesAccordion 
                     projectId={project.id}
                     modules={project.modules} 
-                    onAddModule={noOpPromiseWithArgs}
-                    onEditModule={noOpPromiseWithArgs}
-                    onDeleteModule={noOpPromiseWithArgs}
-                    onModulePartsUpdate={noOpPromiseWithArgs}
                     isClientView={true}
                 />
                 <TimelineView events={project.timelineEvents} />
@@ -50,17 +39,12 @@ export default function ClientPortalView({ project }: { project: Project }) {
                 <div className="space-y-8">
                 <ProjectDocumentsCard 
                     documents={project.projectDocuments || []} 
-                    onAddDocument={noOpPromiseWithArgs}
                     isClientView={true}
                     />
                 <RequirementsCard 
                     projectId={project.id}
                     requirements={project.initialRequirements} 
-                    onAddModules={noOpPromiseWithArgs}
                     projectDescription={project.description}
-                    onAddRequirement={noOpPromiseWithArgs}
-                    onEditRequirement={noOpPromiseWithArgs}
-                    onDeleteRequirement={noOpPromiseWithArgs}
                     isClientView={true}
                 />
                 <ChangeRequestForm projectId={project.id} />
