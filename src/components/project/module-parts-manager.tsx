@@ -93,30 +93,58 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
   
   const isPartCompleted = (part: Part) => part.status === 'Completado';
 
+  if (isClientView) {
+    return (
+        <div className="space-y-2">
+        <ul className="space-y-2">
+            {parts.map((part) => (
+            <li key={part.id} className="flex items-center justify-between gap-2 text-sm">
+                <div className="flex items-center gap-2 flex-1">
+                    <Checkbox
+                        id={`part-approve-${part.id}`}
+                        checked={part.status === 'Completado'}
+                        disabled={part.status !== 'En Revisión' || isApproving === part.id}
+                        onCheckedChange={() => handleApprovePart(part.id)}
+                        aria-label={`Aprobar '${part.name}'`}
+                    />
+                    <label
+                        htmlFor={`part-approve-${part.id}`}
+                        className={cn(
+                            'flex-1',
+                            part.status === 'En Revisión' ? 'cursor-pointer' : 'cursor-default',
+                            part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
+                        )}
+                    >
+                        {part.name}
+                    </label>
+                </div>
+                 {isApproving === part.id && (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+                {part.status === 'Completado' && !isApproving && (
+                    <span className="text-xs font-semibold text-green-600">Aprobado</span>
+                )}
+            </li>
+            ))}
+        </ul>
+        </div>
+    );
+  }
+
   return (
     <div className="space-y-2 rounded-md border p-2 bg-muted/30">
       <ul className="space-y-2">
         {currentParts.map((part) => (
           <li key={part.id} className="flex items-center gap-2 text-sm">
-            {isClientView ? (
-                 <Checkbox
-                    id={`part-approve-${part.id}`}
-                    checked={isPartCompleted(part)}
-                    disabled={part.status !== 'En Revisión' || isApproving === part.id}
-                    onCheckedChange={() => handleApprovePart(part.id)}
-                    aria-label={`Aprobar '${part.name}'`}
-                 />
-            ) : (
-                <Checkbox
-                    id={`part-toggle-${part.id}`}
-                    checked={isPartCompleted(part)}
-                    onCheckedChange={() => handleToggleStatus(part.id)}
-                    aria-label={`Marcar '${part.name}' como ${isPartCompleted(part) ? 'pendiente' : 'completado'}`}
-                    disabled={!onPartsChange}
-                />
-            )}
+            <Checkbox
+                id={`part-toggle-${part.id}`}
+                checked={isPartCompleted(part)}
+                onCheckedChange={() => handleToggleStatus(part.id)}
+                aria-label={`Marcar '${part.name}' como ${isPartCompleted(part) ? 'pendiente' : 'completado'}`}
+                disabled={!onPartsChange}
+            />
            
-            {editingPartId === part.id && !isClientView ? (
+            {editingPartId === part.id ? (
               <Input
                 type="text"
                 value={editingPartName}
@@ -126,10 +154,10 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
               />
             ) : (
               <label
-                htmlFor={isClientView ? `part-approve-${part.id}`: `part-toggle-${part.id}`}
+                htmlFor={`part-toggle-${part.id}`}
                 className={cn(
                     'flex-1',
-                    (onPartsChange && !isClientView) || (onClientApprovePart && part.status === 'En Revisión') ? 'cursor-pointer' : 'cursor-default',
+                    onPartsChange ? 'cursor-pointer' : 'cursor-default',
                     isPartCompleted(part) ? 'text-muted-foreground line-through' : ''
                 )}
               >
@@ -137,7 +165,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
               </label>
             )}
 
-            {!isClientView && onPartsChange && (
+            {onPartsChange && (
                 <>
                     {editingPartId === part.id ? (
                     <>
@@ -160,16 +188,10 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
                     )}
                 </>
             )}
-            {isApproving === part.id && (
-                <Loader2 className="h-4 w-4 animate-spin" />
-            )}
-            {!isApproving && isPartCompleted(part) && (
-                <span className="text-xs font-semibold text-green-600">Aprobado</span>
-            )}
           </li>
         ))}
       </ul>
-      {!isClientView && onPartsChange && (
+      {onPartsChange && (
           <div className="flex gap-2 pt-2">
             <Input
             type="text"
@@ -188,5 +210,3 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
     </div>
   );
 }
-
-    
