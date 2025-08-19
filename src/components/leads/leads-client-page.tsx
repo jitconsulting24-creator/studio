@@ -94,7 +94,8 @@ export default function LeadsClientPage({ initialLeads, initialRequirements }: {
                 <TableHead>Email</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead>Creado el</TableHead>
-                <TableHead>Acciones</TableHead>
+                <TableHead>Formulario</TableHead>
+                <TableHead>Requerimientos</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -116,12 +117,25 @@ export default function LeadsClientPage({ initialLeads, initialRequirements }: {
                     <Button variant="ghost" size="icon" title="Copiar enlace del formulario" onClick={() => copyToClipboard(lead.formLink)}>
                         <Copy className="h-4 w-4" />
                     </Button>
-                     <Link href={hasSubmittedRequirements(lead.id) ? `/dashboard/leads/${lead.id}/requirements` : lead.formLink} passHref legacyBehavior>
+                     <Link href={lead.formLink} passHref legacyBehavior>
                       <a target="_blank">
-                        <Button variant="ghost" size="icon" title={hasSubmittedRequirements(lead.id) ? "Ver requerimientos enviados" : "Ver formulario"}>
-                            {hasSubmittedRequirements(lead.id) ? <FileText className="h-4 w-4 text-primary" /> : <Eye className="h-4 w-4" />}
+                        <Button variant="ghost" size="icon" title={"Ver formulario"}>
+                            <Eye className="h-4 w-4" />
                         </Button>
                       </a>
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    <Link href={`/dashboard/leads/${lead.id}/requirements`} passHref legacyBehavior>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!hasSubmittedRequirements(lead.id)}
+                            aria-disabled={!hasSubmittedRequirements(lead.id)}
+                        >
+                            <FileText className="mr-2 h-4 w-4" />
+                            Ver Requerimientos
+                        </Button>
                     </Link>
                   </TableCell>
                 </TableRow>

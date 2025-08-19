@@ -1,4 +1,3 @@
-
 [
   {
     "id": "1",
@@ -46,6 +45,31 @@
             "name": "UI de Login en Frontend",
             "status": "Completado",
             "id": "part-1"
+          },
+          {
+            "id": "part-1755562902401",
+            "name": "ss",
+            "status": "Pendiente"
+          },
+          {
+            "id": "part-1755562903891",
+            "name": "sss",
+            "status": "Pendiente"
+          },
+          {
+            "id": "part-1755562905039",
+            "name": "ss",
+            "status": "Pendiente"
+          },
+          {
+            "id": "part-1755562906381",
+            "name": "sss",
+            "status": "Pendiente"
+          },
+          {
+            "id": "part-1755562907549",
+            "name": "sss",
+            "status": "Pendiente"
           }
         ],
         "stages": [
@@ -88,6 +112,31 @@
       }
     ],
     "timelineEvents": [
+      {
+        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T00:21:48.096Z",
+        "actor": "admin"
+      },
+      {
+        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T00:21:46.842Z",
+        "actor": "admin"
+      },
+      {
+        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T00:21:45.556Z",
+        "actor": "admin"
+      },
+      {
+        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T00:21:44.511Z",
+        "actor": "admin"
+      },
+      {
+        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T00:21:42.858Z",
+        "actor": "admin"
+      },
       {
         "eventDescription": "Inicio del Proyecto",
         "eventDate": "2023-01-15T00:00:00.000Z",
