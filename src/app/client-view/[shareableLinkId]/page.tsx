@@ -1,3 +1,4 @@
+
 import { getProjectById } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import ClientPortalView from '@/components/client/client-portal-view';

@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent, ClientRequirements } from './definitions';
+import type { ChangeRequest, ChangeRequestStatus, Document, Lead, Module, Part, Project, Requirement, TimelineEvent, ClientRequirements, ModuleStatus } from './definitions';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -176,6 +176,51 @@ export async function updateModuleParts(projectId: string, moduleId: string, upd
 
     await writeData('projects.json', projects);
     revalidatePath(`/dashboard/projects/${projectId}`);
+    revalidatePath(`/client-view/${project.shareableLinkId}`);
+    return { success: true };
+}
+
+export async function clientApproveModule(projectId: string, moduleId: string) {
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return { error: 'Proyecto no encontrado.' };
+
+    const module = project.modules.find(m => m.id === moduleId);
+    if (!module) return { error: 'Módulo no encontrado.' };
+    
+    module.status = 'Completado';
+
+    project.timelineEvents.unshift({
+        eventDescription: `El cliente ha aprobado el módulo: "${module.name}"`,
+        eventDate: new Date(),
+        actor: 'cliente'
+    });
+    await writeData('projects.json', projects);
+    revalidatePath(`/client-view/${project.shareableLinkId}`);
+    return { success: true };
+}
+
+export async function clientApprovePart(projectId: string, moduleId: string, partId: string) {
+    const projects = await readData<Project>('projects.json');
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return { error: 'Proyecto no encontrado.' };
+    
+    const module = project.modules.find(m => m.id === moduleId);
+    if (!module) return { error: 'Módulo no encontrado.' };
+    
+    const part = module.parts.find(p => p.id === partId);
+    if (!part) return { error: 'Tarea no encontrada.' };
+
+    part.status = 'Completado';
+
+     project.timelineEvents.unshift({
+        eventDescription: `El cliente ha aprobado la tarea: "${part.name}" en el módulo "${module.name}"`,
+        eventDate: new Date(),
+        actor: 'cliente'
+    });
+
+    await writeData('projects.json', projects);
+    revalidatePath(`/client-view/${project.shareableLinkId}`);
     return { success: true };
 }
 
@@ -279,7 +324,7 @@ export async function editRequirement(projectId: string, updatedRequirement: Req
     return { success: true, requirement: updatedRequirement };
 }
 
-export async function deleteRequirement(projectId: string, requirementId: string) {
+export async function onDeleteRequirement(projectId: string, requirementId: string) {
     const projects = await readData<Project>('projects.json');
     const project = projects.find(p => p.id === projectId);
 if (!project) return { error: 'Proyecto no encontrado.' };

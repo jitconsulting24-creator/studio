@@ -6,20 +6,22 @@ import type { Part } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PlusCircle, Edit, Trash2, Save, X } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Save, X, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ModulePartsManagerProps {
   parts: Part[];
   onPartsChange?: (updatedParts: Part[]) => Promise<void>;
   isClientView?: boolean;
+  onClientApprovePart?: (partId: string) => Promise<void>;
 }
 
-export default function ModulePartsManager({ parts, onPartsChange, isClientView = false }: ModulePartsManagerProps) {
+export default function ModulePartsManager({ parts, onPartsChange, isClientView = false, onClientApprovePart }: ModulePartsManagerProps) {
   const [currentParts, setCurrentParts] = useState(parts);
   const [newPartName, setNewPartName] = useState('');
   const [editingPartId, setEditingPartId] = useState<string | null>(null);
   const [editingPartName, setEditingPartName] = useState('');
+  const [isApproving, setIsApproving] = useState<string | null>(null);
   const { toast } = useToast();
 
   const triggerChange = async (updatedParts: Part[]) => {
@@ -81,6 +83,13 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
     cancelEditing();
   };
 
+  const handleApprovePart = async (partId: string) => {
+    if (!onClientApprovePart) return;
+    setIsApproving(partId);
+    await onClientApprovePart(partId);
+    setIsApproving(null);
+  };
+
   return (
     <div className="space-y-2 rounded-md border p-2 bg-muted/30">
       <ul className="space-y-2">
@@ -134,6 +143,12 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
                     </>
                     )}
                 </>
+            )}
+             {isClientView && onClientApprovePart && part.status === 'En Revisión' && (
+                <Button size="sm" variant="ghost" className="h-7 px-2 text-green-600 hover:text-green-700" onClick={() => handleApprovePart(part.id)} disabled={isApproving === part.id}>
+                    {isApproving === part.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+                    <span className="ml-1">Aprobar</span>
+                </Button>
             )}
           </li>
         ))}

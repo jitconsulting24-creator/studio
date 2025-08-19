@@ -1,4 +1,6 @@
-import type { Project } from '@/lib/definitions';
+
+'use client';
+import type { Project, Part } from '@/lib/definitions';
 import { FolderKanban } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
 import ProjectHeader from '../project/project-header';
@@ -7,9 +9,30 @@ import TimelineView from '../project/timeline-view';
 import ProjectDocumentsCard from '../project/project-documents-card';
 import RequirementsCard from '../project/requirements-card';
 import ChangeRequestForm from './change-request-form';
+import { clientApproveModule, clientApprovePart } from '@/lib/actions';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ClientPortalView({ project }: { project: Project }) {
-  
+  const { toast } = useToast();
+
+  const handleApproveModule = async (moduleId: string) => {
+    const result = await clientApproveModule(project.id, moduleId);
+    if(result.success) {
+      toast({ title: "Módulo Aprobado", description: "El módulo ha sido marcado como completado."});
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: result.error });
+    }
+  }
+
+  const handleApprovePart = async (moduleId: string, partId: string) => {
+    const result = await clientApprovePart(project.id, moduleId, partId);
+    if(result.success) {
+      toast({ title: "Tarea Aprobada", description: "La tarea ha sido marcada como completada."});
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: result.error });
+    }
+  }
+
   return (
     <>
       <header className="bg-card border-b py-4 sticky top-0 z-40">
@@ -32,6 +55,8 @@ export default function ClientPortalView({ project }: { project: Project }) {
                     projectId={project.id}
                     modules={project.modules} 
                     isClientView={true}
+                    onClientApproveModule={handleApproveModule}
+                    onClientApprovePart={handleApprovePart}
                 />
                 <TimelineView events={project.timelineEvents} />
                 </div>

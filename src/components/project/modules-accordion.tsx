@@ -10,7 +10,7 @@ import {
 import type { Module, Part } from '@/lib/definitions';
 import StatusBadge from '../shared/status-badge';
 import { Button } from '../ui/button';
-import { Edit, Trash2, PlusCircle, Paperclip, FileText, ListTodo, Loader2 } from 'lucide-react';
+import { Edit, Trash2, PlusCircle, Paperclip, FileText, ListTodo, Loader2, CheckCircle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { AddModuleDialog } from './add-module-dialog';
 import { EditModuleDialog } from './edit-module-dialog';
@@ -37,12 +37,15 @@ interface ModulesAccordionProps {
   onDeleteModule?: (moduleId: string) => Promise<void>;
   onModulePartsUpdate?: (moduleId: string, updatedParts: Part[]) => Promise<void>;
   isClientView?: boolean;
+  onClientApproveModule?: (moduleId: string) => Promise<void>;
+  onClientApprovePart?: (moduleId: string, partId: string) => Promise<void>;
 }
 
-export default function ModulesAccordion({ projectId, modules, onAddModule, onEditModule, onDeleteModule, onModulePartsUpdate, isClientView = false }: ModulesAccordionProps) {
+export default function ModulesAccordion({ projectId, modules, onAddModule, onEditModule, onDeleteModule, onModulePartsUpdate, isClientView = false, onClientApproveModule, onClientApprovePart }: ModulesAccordionProps) {
   const [isAddModuleDialogOpen, setIsAddModuleDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isApproving, setIsApproving] = useState<string | null>(null);
 
   const handleDelete = async (moduleId: string) => {
       if (!onDeleteModule) return;
@@ -51,6 +54,13 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
       setIsDeleting(null);
   }
   
+  const handleApprove = async (moduleId: string) => {
+    if (!onClientApproveModule) return;
+    setIsApproving(moduleId);
+    await onClientApproveModule(moduleId);
+    setIsApproving(null);
+  }
+
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between">
@@ -79,35 +89,43 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
                         <span>
                             Fecha Límite: {format(new Date(module.deadline), 'PPP', { locale: es })}
                         </span>
-                        {!isClientView && onEditModule && onDeleteModule && (
-                            <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={() => setEditingModule(module)}>
-                                    <Edit className="mr-2 h-3 w-3" /> Editar
-                                </Button>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" size="sm">
-                                        <Trash2 className="mr-2 h-3 w-3" /> Eliminar
+                        <div className="flex gap-2">
+                            {!isClientView && onEditModule && onDeleteModule && (
+                                <>
+                                    <Button variant="outline" size="sm" onClick={() => setEditingModule(module)}>
+                                        <Edit className="mr-2 h-3 w-3" /> Editar
                                     </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el módulo.
-                                        </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(module.id)} disabled={isDeleting === module.id}>
-                                            {isDeleting === module.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            Eliminar
-                                        </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                        )}
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" size="sm">
+                                            <Trash2 className="mr-2 h-3 w-3" /> Eliminar
+                                        </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta acción no se puede deshacer. Esto eliminará permanentemente el módulo.
+                                            </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDelete(module.id)} disabled={isDeleting === module.id}>
+                                                {isDeleting === module.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                Eliminar
+                                            </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </>
+                            )}
+                             {isClientView && onClientApproveModule && module.status === 'En Revisión' && (
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleApprove(module.id)} disabled={isApproving === module.id}>
+                                     {isApproving === module.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                                    Aprobar Módulo
+                                </Button>
+                             )}
+                        </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -116,6 +134,7 @@ export default function ModulesAccordion({ projectId, modules, onAddModule, onEd
                             parts={module.parts}
                             onPartsChange={onModulePartsUpdate ? (updatedParts) => onModulePartsUpdate(module.id, updatedParts) : undefined}
                             isClientView={isClientView}
+                            onClientApprovePart={onClientApprovePart ? (partId) => onClientApprovePart(module.id, partId) : undefined}
                           />
                       </div>
                       <div className="space-y-4">

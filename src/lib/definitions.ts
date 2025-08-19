@@ -1,8 +1,8 @@
 
 export type ProjectStatus = "Planificación" | "En Progreso" | "En Revisión" | "Completado";
-export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado";
+export type ModuleStatus = "Pendiente" | "En Progreso" | "Completado" | "En Revisión";
 export type ChangeRequestStatus = "Pendiente de Aprobación" | "Aprobado" | "Rechazado";
-export type PartStatus = "Pendiente" | "Completado";
+export type PartStatus = "Pendiente" | "Completado" | "En Revisión";
 export type LeadStatus = "Nuevo" | "Contactado" | "Propuesta Enviada" | "Convertido";
 
 export interface Requirement {
