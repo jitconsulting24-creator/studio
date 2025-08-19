@@ -9,7 +9,7 @@ import TimelineView from './timeline-view';
 import ChangeRequestsList from './change-requests-list';
 import { useToast } from '@/hooks/use-toast';
 import ProjectDocumentsCard from './project-documents-card';
-import { addModule, addModulesFromAI, editModule, deleteModule, updateChangeRequestStatus, updateModuleParts, addRequirement, editRequirement, deleteRequirement, addDocument } from '@/lib/actions';
+import { addModule, addModulesFromAI, editModule, deleteModule, updateChangeRequestStatus, updateModuleParts, addRequirement, editRequirement, onDeleteRequirement, addDocument } from '@/lib/actions';
 
 export default function ProjectDetailsClientPage({ initialProject }: { initialProject: Project }) {
   const { toast } = useToast();
@@ -106,7 +106,7 @@ export default function ProjectDetailsClientPage({ initialProject }: { initialPr
   };
 
   const handleDeleteRequirement = async (requirementId: string) => {
-     const result = await deleteRequirement(projectId, requirementId);
+     const result = await onDeleteRequirement(projectId, requirementId);
      if (result.success) {
         toast({
             variant: 'destructive',
