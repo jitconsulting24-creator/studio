@@ -1,4 +1,3 @@
-
 [
   {
     "id": "1",
@@ -50,7 +49,7 @@
           {
             "id": "part-1755562902401",
             "name": "Endpoint de API para Login",
-            "status": "En Revisión"
+            "status": "Completado"
           },
           {
             "id": "part-1755562903891",
@@ -103,6 +102,11 @@
       }
     ],
     "timelineEvents": [
+      {
+        "eventDescription": "El cliente ha aprobado la tarea: \"Endpoint de API para Login\" en el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T05:32:27.285Z",
+        "actor": "cliente"
+      },
       {
         "eventDescription": "El cliente ha aprobado la tarea: \"Endpoint de API para Login\" en el módulo \"Autenticación de Usuario\"",
         "eventDate": "2025-08-19T05:14:55.870Z",
