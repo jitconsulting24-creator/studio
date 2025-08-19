@@ -102,7 +102,7 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
                  <Checkbox
                     id={`part-approve-${part.id}`}
                     checked={isPartCompleted(part)}
-                    disabled={isPartCompleted(part) || part.status === 'Pendiente' || isApproving === part.id}
+                    disabled={part.status !== 'En Revisión' || isApproving === part.id}
                     onCheckedChange={() => handleApprovePart(part.id)}
                     aria-label={`Aprobar '${part.name}'`}
                  />
@@ -160,10 +160,10 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
                     )}
                 </>
             )}
-            {isClientView && isApproving === part.id && (
+            {isApproving === part.id && (
                 <Loader2 className="h-4 w-4 animate-spin" />
             )}
-             {isClientView && !isApproving && isPartCompleted(part) && (
+            {!isApproving && isPartCompleted(part) && (
                 <span className="text-xs font-semibold text-green-600">Aprobado</span>
             )}
           </li>
@@ -188,3 +188,5 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
     </div>
   );
 }
+
+    
