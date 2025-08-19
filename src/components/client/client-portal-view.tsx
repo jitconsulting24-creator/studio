@@ -11,13 +11,16 @@ import RequirementsCard from '../project/requirements-card';
 import ChangeRequestForm from './change-request-form';
 import { clientApproveModule, clientApprovePart } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
-export default function ClientPortalView({ project }: { project: Project }) {
+export default function ClientPortalView({ project: initialProject }: { project: Project }) {
+  const [project, setProject] = useState(initialProject);
   const { toast } = useToast();
 
   const handleApproveModule = async (moduleId: string) => {
     const result = await clientApproveModule(project.id, moduleId);
-    if(result.success) {
+    if(result.success && result.updatedProject) {
+      setProject(result.updatedProject);
       toast({ title: "Módulo Aprobado", description: "El módulo ha sido marcado como completado."});
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });
@@ -26,7 +29,8 @@ export default function ClientPortalView({ project }: { project: Project }) {
 
   const handleApprovePart = async (moduleId: string, partId: string) => {
     const result = await clientApprovePart(project.id, moduleId, partId);
-    if(result.success) {
+     if(result.success && result.updatedProject) {
+      setProject(result.updatedProject);
       toast({ title: "Tarea Aprobada", description: "La tarea ha sido marcada como completada."});
     } else {
       toast({ variant: 'destructive', title: 'Error', description: result.error });

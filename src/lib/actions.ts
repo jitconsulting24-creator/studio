@@ -182,9 +182,10 @@ export async function updateModuleParts(projectId: string, moduleId: string, upd
 
 export async function clientApproveModule(projectId: string, moduleId: string) {
     const projects = await readData<Project>('projects.json');
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return { error: 'Proyecto no encontrado.' };
+    const projectIndex = projects.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) return { error: 'Proyecto no encontrado.' };
 
+    const project = projects[projectIndex];
     const module = project.modules.find(m => m.id === moduleId);
     if (!module) return { error: 'Módulo no encontrado.' };
     
@@ -197,14 +198,15 @@ export async function clientApproveModule(projectId: string, moduleId: string) {
     });
     await writeData('projects.json', projects);
     revalidatePath(`/client-view/${project.shareableLinkId}`);
-    return { success: true };
+    return { success: true, updatedProject: project };
 }
 
 export async function clientApprovePart(projectId: string, moduleId: string, partId: string) {
     const projects = await readData<Project>('projects.json');
-    const project = projects.find(p => p.id === projectId);
-    if (!project) return { error: 'Proyecto no encontrado.' };
-    
+    const projectIndex = projects.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) return { error: 'Proyecto no encontrado.' };
+
+    const project = projects[projectIndex];
     const module = project.modules.find(m => m.id === moduleId);
     if (!module) return { error: 'Módulo no encontrado.' };
     
@@ -221,7 +223,7 @@ export async function clientApprovePart(projectId: string, moduleId: string, par
 
     await writeData('projects.json', projects);
     revalidatePath(`/client-view/${project.shareableLinkId}`);
-    return { success: true };
+    return { success: true, updatedProject: project };
 }
 
 // --- CHANGE REQUEST ACTIONS ---
