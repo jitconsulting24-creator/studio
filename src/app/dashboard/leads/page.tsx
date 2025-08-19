@@ -1,11 +1,11 @@
 
 'use client';
 import { useState } from 'react';
-import { DUMMY_LEADS } from '@/lib/data';
+import { DUMMY_LEADS, DUMMY_CLIENT_REQUIREMENTS } from '@/lib/data';
 import type { Lead } from '@/lib/definitions';
 import PageHeader from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Mail, Copy, Eye, Loader2 } from 'lucide-react';
+import { PlusCircle, Mail, Copy, Eye, Loader2, FileText } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -27,29 +27,29 @@ import { es } from 'date-fns/locale';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { createLead } from '@/lib/actions';
+import { CreateLeadDialog } from '@/components/leads/create-lead-dialog';
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>(DUMMY_LEADS);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreateLeadDialogOpen, setIsCreateLeadDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleCreateLead = async () => {
-    setIsCreating(true);
-    const result = await createLead();
+  const handleCreateLead = async (leadData: Omit<Lead, 'id' | 'createdAt' | 'formLink' | 'status'>) => {
+    const result = await createLead(leadData);
     if (result.success && result.lead) {
         setLeads((prev) => [result.lead!, ...prev]);
         toast({
             title: 'Lead Creado',
             description: 'Se ha creado un nuevo lead y se ha añadido a la lista.',
         });
+        setIsCreateLeadDialogOpen(false);
     } else {
         toast({
             variant: 'destructive',
             title: 'Error',
-            description: 'No se pudo crear el lead.',
+            description: result.error || 'No se pudo crear el lead.',
         });
     }
-    setIsCreating(false);
   };
 
   const copyToClipboard = (link: string) => {
@@ -61,14 +61,18 @@ export default function LeadsPage() {
     });
   };
 
+  const hasSubmittedRequirements = (leadId: string) => {
+      return !!DUMMY_CLIENT_REQUIREMENTS.find(req => req.leadId === leadId);
+  }
+
   return (
     <div className="container mx-auto">
       <PageHeader
         title="Leads"
         description="Gestiona tus clientes potenciales y sus requerimientos."
       >
-        <Button onClick={handleCreateLead} disabled={isCreating}>
-          {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+        <Button onClick={() => setIsCreateLeadDialogOpen(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
           Crear Nuevo Lead
         </Button>
       </PageHeader>
@@ -111,10 +115,10 @@ export default function LeadsPage() {
                     <Button variant="ghost" size="icon" title="Copiar enlace del formulario" onClick={() => copyToClipboard(lead.formLink)}>
                         <Copy className="h-4 w-4" />
                     </Button>
-                     <Link href={lead.formLink} passHref legacyBehavior>
+                     <Link href={hasSubmittedRequirements(lead.id) ? `/dashboard/leads/${lead.id}/requirements` : lead.formLink} passHref legacyBehavior>
                       <a target="_blank">
-                        <Button variant="ghost" size="icon" title="Ver formulario">
-                            <Eye className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" title={hasSubmittedRequirements(lead.id) ? "Ver requerimientos enviados" : "Ver formulario"}>
+                            {hasSubmittedRequirements(lead.id) ? <FileText className="h-4 w-4 text-primary" /> : <Eye className="h-4 w-4" />}
                         </Button>
                       </a>
                     </Link>
@@ -125,6 +129,11 @@ export default function LeadsPage() {
           </Table>
         </CardContent>
       </Card>
+       <CreateLeadDialog
+        isOpen={isCreateLeadDialogOpen}
+        onClose={() => setIsCreateLeadDialogOpen(false)}
+        onAddLead={handleCreateLead}
+      />
     </div>
   );
 }

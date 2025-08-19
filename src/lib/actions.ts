@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -272,12 +273,16 @@ export async function addDocument(projectId: string, documentData: Omit<Document
 
 // --- LEAD ACTIONS ---
 
-export async function createLead() {
+export async function createLead(leadData: Omit<Lead, 'id' | 'createdAt' | 'formLink' | 'status'>) {
+    if (!leadData.name || !leadData.email) {
+        return { error: 'El nombre y el correo electrónico son obligatorios.' };
+    }
+
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
-      name: 'Nuevo Lead',
-      email: `lead${DUMMY_LEADS.length + 1}@example.com`,
-      company: 'Empresa Pendiente',
+      name: leadData.name,
+      email: leadData.email,
+      company: leadData.company,
       status: 'Nuevo',
       createdAt: new Date(),
       formLink: `/leads/lead-${Date.now()}/form`,
