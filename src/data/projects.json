@@ -49,28 +49,13 @@
           },
           {
             "id": "part-1755562902401",
-            "name": "ss",
-            "status": "Pendiente"
+            "name": "Endpoint de API para Login",
+            "status": "Completado"
           },
           {
             "id": "part-1755562903891",
-            "name": "sss",
-            "status": "Pendiente"
-          },
-          {
-            "id": "part-1755562905039",
-            "name": "ss",
-            "status": "Pendiente"
-          },
-          {
-            "id": "part-1755562906381",
-            "name": "sss",
-            "status": "Pendiente"
-          },
-          {
-            "id": "part-1755562907549",
-            "name": "sss",
-            "status": "Pendiente"
+            "name": "Gestión de Perfil de Usuario",
+            "status": "En Revisión"
           }
         ],
         "stages": [
@@ -100,7 +85,7 @@
         "id": "mod2",
         "name": "Catálogo de Productos",
         "description": "Módulo para la gestión del catálogo de productos.",
-        "status": "En Progreso",
+        "status": "En Revisión",
         "deadline": "2024-05-20T00:00:00.000Z",
         "parts": [],
         "stages": [],
@@ -116,26 +101,6 @@
       {
         "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
         "eventDate": "2025-08-19T00:21:48.096Z",
-        "actor": "admin"
-      },
-      {
-        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
-        "eventDate": "2025-08-19T00:21:46.842Z",
-        "actor": "admin"
-      },
-      {
-        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
-        "eventDate": "2025-08-19T00:21:45.556Z",
-        "actor": "admin"
-      },
-      {
-        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
-        "eventDate": "2025-08-19T00:21:44.511Z",
-        "actor": "admin"
-      },
-      {
-        "eventDescription": "Tareas actualizadas para el módulo \"Autenticación de Usuario\"",
-        "eventDate": "2025-08-19T00:21:42.858Z",
         "actor": "admin"
       },
       {
@@ -168,7 +133,34 @@
     "shareableLinkId": "client-banking-app-456",
     "initialRequirements": [],
     "projectDocuments": [],
-    "modules": [],
+    "modules": [
+      {
+        "id": "mod-bank-1",
+        "name": "Interfaz de Transferencias",
+        "description": "Diseño e implementación de la interfaz para transferencias bancarias.",
+        "status": "En Revisión",
+        "deadline": "2024-09-30T00:00:00.000Z",
+        "owner": "Equipo de UI/UX",
+        "estimatedHours": 100,
+        "parts": [
+          {
+            "id": "part-bank-1",
+            "name": "Diseño de la vista de transferencia",
+            "status": "Completado"
+          },
+          {
+            "id": "part-bank-2",
+            "name": "Integración con API de transferencias",
+            "status": "En Revisión"
+          }
+        ],
+        "stages": [],
+        "requirements": [],
+        "reviews": [],
+        "deliverables": [],
+        "documents": []
+      }
+    ],
     "timelineEvents": [
       {
         "eventDescription": "Proyecto \"App de Banca Móvil\" creado.",
