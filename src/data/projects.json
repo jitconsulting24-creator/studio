@@ -1,4 +1,3 @@
-
 [
   {
     "id": "1",
@@ -239,5 +238,25 @@
       }
     ],
     "changeRequests": []
+  },
+  {
+    "name": "ss",
+    "description": "ss",
+    "startDate": "2025-08-18T05:00:00.000Z",
+    "deadline": "2025-08-26T05:00:00.000Z",
+    "status": "Planificación",
+    "id": "proj-1755565952107",
+    "shareableLinkId": "client-link-1755565952107",
+    "modules": [],
+    "timelineEvents": [
+      {
+        "actor": "sistema",
+        "eventDate": "2025-08-19T01:12:32.107Z",
+        "eventDescription": "Proyecto \"ss\" creado."
+      }
+    ],
+    "changeRequests": [],
+    "initialRequirements": [],
+    "projectDocuments": []
   }
 ]
