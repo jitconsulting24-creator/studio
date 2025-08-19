@@ -1,6 +1,6 @@
 
 
-import { getClientRequirements, getLeadById } from '@/lib/data';
+import { getLeadById, getRequirementsByLeadId } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import PageHeader from '@/components/shared/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
