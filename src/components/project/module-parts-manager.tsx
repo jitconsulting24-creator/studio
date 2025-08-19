@@ -2,21 +2,33 @@
 'use client';
 
 import { useState } from 'react';
-import type { Part, PartStatus } from '@/lib/definitions';
+import type { Part } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PlusCircle, Edit, Trash2, Save, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ModulePartsManagerProps {
   parts: Part[];
-  onPartsChange: (updatedParts: Part[]) => void;
+  onPartsChange: (updatedParts: Part[]) => Promise<void>;
 }
 
 export default function ModulePartsManager({ parts, onPartsChange }: ModulePartsManagerProps) {
+  const [currentParts, setCurrentParts] = useState(parts);
   const [newPartName, setNewPartName] = useState('');
   const [editingPartId, setEditingPartId] = useState<string | null>(null);
   const [editingPartName, setEditingPartName] = useState('');
+  const { toast } = useToast();
+
+  const triggerChange = async (updatedParts: Part[]) => {
+    setCurrentParts(updatedParts);
+    await onPartsChange(updatedParts);
+    toast({
+        title: 'Tareas Actualizadas',
+        description: 'La lista de tareas ha sido actualizada.'
+    });
+  };
 
   const handleAddPart = () => {
     if (newPartName.trim() === '') return;
@@ -25,17 +37,17 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
       name: newPartName.trim(),
       status: 'Pendiente',
     };
-    onPartsChange([...parts, newPart]);
+    triggerChange([...currentParts, newPart]);
     setNewPartName('');
   };
 
   const handleDeletePart = (partId: string) => {
-    onPartsChange(parts.filter((part) => part.id !== partId));
+    triggerChange(currentParts.filter((part) => part.id !== partId));
   };
 
   const handleToggleStatus = (partId: string) => {
-    onPartsChange(
-      parts.map((part) =>
+    triggerChange(
+      currentParts.map((part) =>
         part.id === partId
           ? {
               ...part,
@@ -58,8 +70,8 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
 
   const handleEditPart = () => {
     if (editingPartName.trim() === '' || !editingPartId) return;
-    onPartsChange(
-      parts.map((part) =>
+    triggerChange(
+      currentParts.map((part) =>
         part.id === editingPartId ? { ...part, name: editingPartName.trim() } : part
       )
     );
@@ -69,7 +81,7 @@ export default function ModulePartsManager({ parts, onPartsChange }: ModuleParts
   return (
     <div className="space-y-2 rounded-md border p-2 bg-muted/30">
       <ul className="space-y-2">
-        {parts.map((part) => (
+        {currentParts.map((part) => (
           <li key={part.id} className="flex items-center gap-2 text-sm">
             <Checkbox
               id={`part-${part.id}`}

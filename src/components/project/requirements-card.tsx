@@ -2,22 +2,35 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { ClipboardList, ExternalLink, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { ClipboardList, ExternalLink, PlusCircle, Edit, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { ModuleGeneratorDialog } from './module-generator-dialog';
 import type { Module, Requirement } from '@/lib/definitions';
 import { RequirementDialog } from './requirement-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface RequirementsCardProps {
+    projectId: string;
     requirements: Requirement[];
-    onAddModules: (modules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => void;
+    onAddModules: (modules: Omit<Module, 'id' | 'status' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) => Promise<void>;
     projectDescription: string;
-    onAddRequirement: (requirement: Omit<Requirement, 'id'>) => void;
-    onEditRequirement: (requirement: Requirement) => void;
-    onDeleteRequirement: (requirementId: string) => void;
+    onAddRequirement: (requirement: Omit<Requirement, 'id'>) => Promise<void>;
+    onEditRequirement: (requirement: Requirement) => Promise<void>;
+    onDeleteRequirement: (requirementId: string) => Promise<void>;
 }
 
 export default function RequirementsCard({
+    projectId,
     requirements,
     onAddModules,
     projectDescription,
@@ -27,20 +40,28 @@ export default function RequirementsCard({
 }: RequirementsCardProps) {
   const [isRequirementDialogOpen, setIsRequirementDialogOpen] = useState(false);
   const [editingRequirement, setEditingRequirement] = useState<Requirement | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleOpenDialog = (requirement: Requirement | null = null) => {
     setEditingRequirement(requirement);
     setIsRequirementDialogOpen(true);
   };
 
-  const handleSaveRequirement = (requirementData: Omit<Requirement, 'id'> | Requirement) => {
+  const handleSaveRequirement = async (requirementData: Omit<Requirement, 'id'> | Requirement) => {
     if ('id' in requirementData) {
-      onEditRequirement(requirementData);
+      await onEditRequirement(requirementData);
     } else {
-      onAddRequirement(requirementData);
+      await onAddRequirement(requirementData);
     }
     setIsRequirementDialogOpen(false);
+    setEditingRequirement(null);
   };
+
+  const handleDelete = async (requirementId: string) => {
+    setIsDeleting(requirementId);
+    await onDeleteRequirement(requirementId);
+    setIsDeleting(null);
+  }
 
   return (
     <Card>
@@ -76,9 +97,28 @@ export default function RequirementsCard({
                             <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(req)}>
                                 <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => onDeleteRequirement(req.id)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta acción no se puede deshacer. Esto eliminará permanentemente el requisito.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(req.id)} disabled={isDeleting === req.id}>
+                                            {isDeleting === req.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            Eliminar
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     </li>
                     ))}
@@ -90,7 +130,10 @@ export default function RequirementsCard({
         {isRequirementDialogOpen && (
              <RequirementDialog
                 isOpen={isRequirementDialogOpen}
-                onClose={() => setIsRequirementDialogOpen(false)}
+                onClose={() => {
+                    setIsRequirementDialogOpen(false);
+                    setEditingRequirement(null);
+                }}
                 onSave={handleSaveRequirement}
                 requirement={editingRequirement}
             />

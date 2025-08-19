@@ -3,51 +3,64 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Folder, ExternalLink, PlusCircle } from 'lucide-react';
+import { Folder, ExternalLink, PlusCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Document } from '@/lib/definitions';
-// This component can be a simple dialog for adding a document name and URL for now.
-// A real implementation would involve file uploads.
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface ProjectDocumentsCardProps {
     documents: Document[];
-    onAddDocument: (document: Omit<Document, 'id'>) => void;
+    onAddDocument: (document: Omit<Document, 'id'>) => Promise<void>;
 }
 
-// A simple dialog for adding documents. In a real app, this would be more robust.
-const AddDocumentDialog = ({ onAdd, onCancel }: { onAdd: (doc: Omit<Document, 'id'>) => void, onCancel: () => void }) => {
+const AddDocumentDialog = ({ onAdd, onCancel }: { onAdd: (doc: Omit<Document, 'id'>) => Promise<void>, onCancel: () => void }) => {
     const [name, setName] = useState('');
-    const [url, setUrl] = useState('#'); // Placeholder URL
+    const [url, setUrl] = useState('');
     const [type, setType] = useState<'Brief' | 'Observaciones' | 'Otro'>('Otro');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleAdd = () => {
-        if(name) {
-            onAdd({name, url, type});
+    const handleAdd = async () => {
+        if(name && url) {
+            setIsSubmitting(true);
+            await onAdd({name, url, type});
+            setIsSubmitting(false);
+        } else {
+            alert('Nombre y URL son obligatorios.');
         }
     }
+
     return (
         <div className="p-4 border bg-background rounded-md mt-2 space-y-2">
-            <input placeholder="Nombre del Documento" value={name} onChange={e => setName(e.target.value)} className="w-full p-2 border rounded-md" />
-            <input placeholder="URL" value={url} onChange={e => setUrl(e.target.value)} className="w-full p-2 border rounded-md" />
-            <select value={type} onChange={e => setType(e.target.value as any)} className="w-full p-2 border rounded-md">
-                <option>Brief</option>
-                <option>Observaciones</option>
-                <option>Otro</option>
-            </select>
+            <Input placeholder="Nombre del Documento" value={name} onChange={e => setName(e.target.value)} className="w-full" />
+            <Input placeholder="URL del Documento" value={url} onChange={e => setUrl(e.target.value)} className="w-full" />
+             <Select value={type} onValueChange={(value) => setType(value as any)}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Tipo de documento" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Brief">Brief</SelectItem>
+                    <SelectItem value="Observaciones">Observaciones</SelectItem>
+                    <SelectItem value="Acta de Reunión">Acta de Reunión</SelectItem>
+                    <SelectItem value="Otro">Otro</SelectItem>
+                </SelectContent>
+            </Select>
             <div className="flex justify-end gap-2">
                 <Button variant="ghost" onClick={onCancel}>Cancelar</Button>
-                <Button onClick={handleAdd}>Añadir</Button>
+                <Button onClick={handleAdd} disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Añadir
+                </Button>
             </div>
         </div>
     )
 }
 
-
 export default function ProjectDocumentsCard({ documents, onAddDocument }: ProjectDocumentsCardProps) {
     const [isAdding, setIsAdding] = useState(false);
 
-    const handleAddDocument = (doc: Omit<Document, 'id'>) => {
-        onAddDocument(doc);
+    const handleAddDocument = async (doc: Omit<Document, 'id'>) => {
+        await onAddDocument(doc);
         setIsAdding(false);
     }
 
@@ -59,7 +72,7 @@ export default function ProjectDocumentsCard({ documents, onAddDocument }: Proje
                     <Folder className="h-6 w-6 text-primary" />
                     <CardTitle>Documentos del Proyecto</CardTitle>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)}>
+                <Button variant="outline" size="sm" onClick={() => setIsAdding(!isAdding)} disabled={isAdding}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Añadir
                 </Button>
             </div>

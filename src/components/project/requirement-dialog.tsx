@@ -13,17 +13,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Requirement } from '@/lib/definitions';
+import { Loader2 } from 'lucide-react';
 
 interface RequirementDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (requirement: Omit<Requirement, 'id'> | Requirement) => void;
+  onSave: (requirement: Omit<Requirement, 'id'> | Requirement) => Promise<void>;
   requirement: Requirement | null;
 }
 
 export function RequirementDialog({ isOpen, onClose, onSave, requirement }: RequirementDialogProps) {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (requirement) {
@@ -35,17 +37,19 @@ export function RequirementDialog({ isOpen, onClose, onSave, requirement }: Requ
     }
   }, [requirement]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (title && url) {
+      setIsSubmitting(true);
       const requirementData = {
         title,
         url,
       };
       if (requirement) {
-        onSave({ ...requirementData, id: requirement.id });
+        await onSave({ ...requirementData, id: requirement.id });
       } else {
-        onSave(requirementData);
+        await onSave(requirementData);
       }
+      setIsSubmitting(false);
       onClose();
     } else {
       alert('Por favor, rellene todos los campos.');
@@ -77,7 +81,8 @@ export function RequirementDialog({ isOpen, onClose, onSave, requirement }: Requ
         </div>
         <DialogFooter>
             <Button variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit" onClick={handleSubmit}>
+            <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {requirement ? 'Guardar Cambios' : 'Añadir Requisito'}
             </Button>
         </DialogFooter>

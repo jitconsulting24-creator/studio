@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DUMMY_CLIENT_REQUIREMENTS, DUMMY_LEADS } from '@/lib/data';
 import { useParams } from 'next/navigation';
+import { submitLeadForm } from '@/lib/actions';
 
 interface ProjectRequirementsFormProps {
     projectType: string;
@@ -107,26 +108,23 @@ export default function ProjectRequirementsForm({ projectType, onBack, onSubmitS
         e.preventDefault();
         setIsLoading(true);
         
-        // In a real app, this would be an API call. Here we just update the dummy data.
-        const lead = DUMMY_LEADS.find(l => l.id === leadId);
-        if (lead) {
-            lead.status = 'Propuesta Enviada';
-            DUMMY_CLIENT_REQUIREMENTS.push({
-                leadId,
-                submittedAt: new Date(),
-                ...formData,
-            });
-            console.log('Updated DUMMY_CLIENT_REQUIREMENTS:', DUMMY_CLIENT_REQUIREMENTS);
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        const result = await submitLeadForm(leadId, formData);
         
         setIsLoading(false);
-        toast({
-            title: "Requerimientos Enviados",
-            description: "Gracias por completar el formulario. Nos pondremos en contacto contigo pronto.",
-        });
-        onSubmitSuccess();
+
+        if (result.success) {
+            toast({
+                title: "Requerimientos Enviados",
+                description: "Gracias por completar el formulario. Nos pondremos en contacto contigo pronto.",
+            });
+            onSubmitSuccess();
+        } else {
+             toast({
+                variant: 'destructive',
+                title: "Error",
+                description: result.error || "No se pudo enviar el formulario.",
+            });
+        }
     };
 
     const nextStep = () => setCurrentStep(prev => prev + 1);

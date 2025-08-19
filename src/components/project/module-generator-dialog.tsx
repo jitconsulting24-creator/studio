@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface ModuleGeneratorDialogProps {
-  onAddModules: (modules: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews'>[]) => void;
+  onAddModules: (modules: Omit<Module, 'id' | 'status' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>[]) => Promise<void>;
   projectDescription: string;
 }
 
@@ -51,13 +51,15 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (result) {
-      const newModules = result.modules.map(m => ({
-        ...m,
-        deadline: new Date(m.deadline),
-      }));
-      onAddModules(newModules);
+        setIsLoading(true);
+        const newModules = result.modules.map(m => ({
+            ...m,
+            deadline: new Date(m.deadline),
+        }));
+        await onAddModules(newModules);
+        setIsLoading(false);
     }
     setIsOpen(false);
     setResult(null);
@@ -65,7 +67,14 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+            setResult(null);
+            setError(null);
+            setDescription(projectDescription);
+        }
+        setIsOpen(open);
+    }}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <BrainCircuit className="mr-2 h-4 w-4" />
@@ -95,7 +104,7 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
           </div>
         </div>
 
-        {isLoading && (
+        {isLoading && !result && (
           <div className="flex items-center justify-center rounded-md border border-dashed p-8">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
@@ -124,8 +133,13 @@ export function ModuleGeneratorDialog({ onAddModules, projectDescription }: Modu
 
         <DialogFooter>
           {result ? (
-             <Button onClick={handleConfirm}>
-                Añadir Módulos al Proyecto
+             <Button onClick={handleConfirm} disabled={isLoading}>
+                 {isLoading ? (
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Añadiendo...
+                    </>
+                 ) : "Añadir Módulos al Proyecto"}
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={isLoading}>

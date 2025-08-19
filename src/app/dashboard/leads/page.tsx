@@ -5,7 +5,7 @@ import { DUMMY_LEADS } from '@/lib/data';
 import type { Lead } from '@/lib/definitions';
 import PageHeader from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Mail, Copy, Eye } from 'lucide-react';
+import { PlusCircle, Mail, Copy, Eye, Loader2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -26,26 +26,30 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { createLead } from '@/lib/actions';
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>(DUMMY_LEADS);
+  const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
 
-  const handleCreateLead = () => {
-    const newLead: Lead = {
-      id: `lead-${Date.now()}`,
-      name: 'Nuevo Lead',
-      email: `lead${leads.length + 1}@example.com`,
-      company: 'Empresa Pendiente',
-      status: 'Nuevo',
-      createdAt: new Date(),
-      formLink: `/leads/lead-${Date.now()}/form`,
-    };
-    setLeads((prev) => [newLead, ...prev]);
-    toast({
-        title: 'Lead Creado',
-        description: 'Se ha creado un nuevo lead y se ha añadido a la lista.',
-    });
+  const handleCreateLead = async () => {
+    setIsCreating(true);
+    const result = await createLead();
+    if (result.success && result.lead) {
+        setLeads((prev) => [result.lead!, ...prev]);
+        toast({
+            title: 'Lead Creado',
+            description: 'Se ha creado un nuevo lead y se ha añadido a la lista.',
+        });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'No se pudo crear el lead.',
+        });
+    }
+    setIsCreating(false);
   };
 
   const copyToClipboard = (link: string) => {
@@ -63,8 +67,8 @@ export default function LeadsPage() {
         title="Leads"
         description="Gestiona tus clientes potenciales y sus requerimientos."
       >
-        <Button onClick={handleCreateLead}>
-          <PlusCircle className="mr-2 h-4 w-4" />
+        <Button onClick={handleCreateLead} disabled={isCreating}>
+          {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
           Crear Nuevo Lead
         </Button>
       </PageHeader>

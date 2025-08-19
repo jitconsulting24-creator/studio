@@ -1,12 +1,22 @@
+'use client';
 import type { ChangeRequest, ChangeRequestStatus } from '@/lib/definitions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import { Check, X } from 'lucide-react';
+import { Check, Loader2, X } from 'lucide-react';
 import StatusBadge from '../shared/status-badge';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useState } from 'react';
 
-export default function ChangeRequestsList({ requests, onChangeRequestStatus }: { requests: ChangeRequest[], onChangeRequestStatus: (id: string, status: ChangeRequestStatus) => void }) {
+export default function ChangeRequestsList({ requests, onUpdateStatus }: { requests: ChangeRequest[], onUpdateStatus: (id: string, status: ChangeRequestStatus) => Promise<void> }) {
+  const [loadingStatus, setLoadingStatus] = useState<Record<string, ChangeRequestStatus | null>>({});
+
+  const handleUpdate = async (id: string, status: ChangeRequestStatus) => {
+    setLoadingStatus(prev => ({...prev, [id]: status}));
+    await onUpdateStatus(id, status);
+    setLoadingStatus(prev => ({...prev, [id]: null}));
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -27,11 +37,21 @@ export default function ChangeRequestsList({ requests, onChangeRequestStatus }: 
                 </p>
                 {request.status === 'Pendiente de Aprobación' && (
                   <div className="mt-3 flex gap-2">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => onChangeRequestStatus(request.id, 'Aprobado')}>
-                      <Check className="mr-1 h-4 w-4" /> Aprobar
+                    <Button 
+                      size="sm" 
+                      className="bg-green-600 hover:bg-green-700" 
+                      onClick={() => handleUpdate(request.id, 'Aprobado')}
+                      disabled={!!loadingStatus[request.id]}
+                    >
+                      {loadingStatus[request.id] === 'Aprobado' ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Check className="mr-1 h-4 w-4" /> Aprobar</>}
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => onChangeRequestStatus(request.id, 'Rechazado')}>
-                      <X className="mr-1 h-4 w-4" /> Rechazar
+                    <Button 
+                      size="sm" 
+                      variant="destructive" 
+                      onClick={() => handleUpdate(request.id, 'Rechazado')}
+                      disabled={!!loadingStatus[request.id]}
+                      >
+                      {loadingStatus[request.id] === 'Rechazado' ? <Loader2 className="h-4 w-4 animate-spin" /> : <><X className="mr-1 h-4 w-4" /> Rechazar</>}
                     </Button>
                   </div>
                 )}

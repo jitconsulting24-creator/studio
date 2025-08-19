@@ -10,7 +10,7 @@ import {
 import type { Module, Part } from '@/lib/definitions';
 import StatusBadge from '../shared/status-badge';
 import { Button } from '../ui/button';
-import { Edit, Trash2, PlusCircle, Paperclip, FileText, ListTodo } from 'lucide-react';
+import { Edit, Trash2, PlusCircle, Paperclip, FileText, ListTodo, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { AddModuleDialog } from './add-module-dialog';
 import { EditModuleDialog } from './edit-module-dialog';
@@ -30,16 +30,24 @@ import { es } from 'date-fns/locale';
 import ModulePartsManager from './module-parts-manager';
 
 interface ModulesAccordionProps {
+  projectId: string;
   modules: Module[];
-  onAddModule: (module: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => void;
-  onEditModule: (module: Module) => void;
-  onDeleteModule: (moduleId: string) => void;
-  onModulePartsUpdate: (moduleId: string, updatedParts: Part[]) => void;
+  onAddModule: (module: Omit<Module, 'id' | 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => Promise<void>;
+  onEditModule: (module: Module) => Promise<void>;
+  onDeleteModule: (moduleId: string) => Promise<void>;
+  onModulePartsUpdate: (moduleId: string, updatedParts: Part[]) => Promise<void>;
 }
 
-export default function ModulesAccordion({ modules, onAddModule, onEditModule, onDeleteModule, onModulePartsUpdate }: ModulesAccordionProps) {
+export default function ModulesAccordion({ projectId, modules, onAddModule, onEditModule, onDeleteModule, onModulePartsUpdate }: ModulesAccordionProps) {
   const [isAddModuleDialogOpen, setIsAddModuleDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const handleDelete = async (moduleId: string) => {
+      setIsDeleting(moduleId);
+      await onDeleteModule(moduleId);
+      setIsDeleting(null);
+  }
   
   return (
     <Card>
@@ -65,7 +73,7 @@ export default function ModulesAccordion({ modules, onAddModule, onEditModule, o
                     <p className="text-sm text-muted-foreground">{module.description}</p>
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
                         <span>
-                            Fecha Límite: {format(module.deadline, 'PPP', { locale: es })}
+                            Fecha Límite: {format(new Date(module.deadline), 'PPP', { locale: es })}
                         </span>
                         <div className="flex gap-2">
                             <Button variant="outline" size="sm" onClick={() => setEditingModule(module)}>
@@ -86,7 +94,10 @@ export default function ModulesAccordion({ modules, onAddModule, onEditModule, o
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => onDeleteModule(module.id)}>Eliminar</AlertDialogAction>
+                                    <AlertDialogAction onClick={() => handleDelete(module.id)} disabled={isDeleting === module.id}>
+                                        {isDeleting === module.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Eliminar
+                                    </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
@@ -136,13 +147,13 @@ export default function ModulesAccordion({ modules, onAddModule, onEditModule, o
        <AddModuleDialog
         isOpen={isAddModuleDialogOpen}
         onClose={() => setIsAddModuleDialogOpen(false)}
-        onAddModule={onAddModule}
+        onAddModule={(moduleData) => onAddModule(moduleData)}
       />
       {editingModule && (
         <EditModuleDialog
             isOpen={!!editingModule}
             onClose={() => setEditingModule(null)}
-            onEditModule={onEditModule}
+            onEditModule={(moduleData) => onEditModule(moduleData)}
             module={editingModule}
         />
       )}

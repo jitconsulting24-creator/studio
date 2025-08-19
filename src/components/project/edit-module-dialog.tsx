@@ -21,14 +21,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface EditModuleDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onEditModule: (module: Module) => void;
+  onEditModule: (module: Module) => Promise<void>;
   module: Module;
 }
 
@@ -38,6 +38,7 @@ export function EditModuleDialog({ isOpen, onClose, onEditModule, module }: Edit
   const [deadline, setDeadline] = useState<Date | undefined>(module.deadline);
   const [owner, setOwner] = useState(module.owner);
   const [estimatedHours, setEstimatedHours] = useState(module.estimatedHours);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setName(module.name);
@@ -47,9 +48,10 @@ export function EditModuleDialog({ isOpen, onClose, onEditModule, module }: Edit
     setEstimatedHours(module.estimatedHours);
   }, [module]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (name && description && deadline && owner && estimatedHours > 0) {
-      onEditModule({
+      setIsSubmitting(true);
+      await onEditModule({
         ...module,
         name,
         description,
@@ -57,6 +59,7 @@ export function EditModuleDialog({ isOpen, onClose, onEditModule, module }: Edit
         owner,
         estimatedHours
       });
+      setIsSubmitting(false);
       onClose();
     } else {
         alert('Por favor, rellene todos los campos.');
@@ -128,7 +131,10 @@ export function EditModuleDialog({ isOpen, onClose, onEditModule, module }: Edit
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button type="submit" onClick={handleSubmit}>Guardar Cambios</Button>
+          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Guardar Cambios
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

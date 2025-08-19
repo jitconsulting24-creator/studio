@@ -8,30 +8,30 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import type { Project } from '@/lib/definitions';
 import { CreateProjectDialog } from '@/components/dashboard/create-project-dialog';
+import { addProject } from '@/lib/actions';
+import { useToast } from '@/hooks/use-toast';
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState<Project[]>(DUMMY_PROJECTS);
   const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] =
     useState(false);
+  const { toast } = useToast();
 
-  const handleAddProject = (newProjectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => {
-    const newProject: Project = {
-      ...newProjectData,
-      id: `proj-${Date.now()}`,
-      shareableLinkId: `client-link-${Date.now()}`,
-      modules: [],
-      timelineEvents: [{
-        actor: 'sistema',
-        eventDate: new Date(),
-        eventDescription: `Proyecto "${newProjectData.name}" creado.`
-      }],
-      changeRequests: [],
-      initialRequirements: [],
-      projectDocuments: [],
-    };
-    // In a real app, this would be an API call. Here we just update the dummy data.
-    DUMMY_PROJECTS.push(newProject);
-    setProjects(prev => [...prev, newProject]);
+  const handleAddProject = async (newProjectData: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => {
+    const result = await addProject(newProjectData);
+    if (result.success && result.project) {
+        setProjects(prev => [result.project!, ...prev]);
+        toast({
+            title: 'Proyecto Creado',
+            description: `El proyecto "${result.project.name}" ha sido creado.`,
+        });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'No se pudo crear el proyecto.',
+        });
+    }
   };
 
   return (

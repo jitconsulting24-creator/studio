@@ -21,14 +21,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface AddModuleDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddModule: (newModule: Omit<Module, 'id'| 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => void;
+  onAddModule: (newModule: Omit<Module, 'id'| 'parts' | 'stages' | 'requirements' | 'reviews' | 'deliverables' | 'documents'>) => Promise<void>;
 }
 
 export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialogProps) {
@@ -37,10 +37,12 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
   const [deadline, setDeadline] = useState<Date | undefined>();
   const [owner, setOwner] = useState('');
   const [estimatedHours, setEstimatedHours] = useState<number>(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (name && description && deadline && owner && estimatedHours > 0) {
-      onAddModule({
+      setIsSubmitting(true);
+      await onAddModule({
         name,
         description,
         deadline,
@@ -48,6 +50,7 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
         owner,
         estimatedHours
       });
+      setIsSubmitting(false);
       onClose();
       // Reset fields
       setName('');
@@ -124,7 +127,10 @@ export function AddModuleDialog({ isOpen, onClose, onAddModule }: AddModuleDialo
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>Añadir Módulo</Button>
+          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Añadir Módulo
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

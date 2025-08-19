@@ -21,14 +21,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from '@/lib/utils';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface CreateProjectDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddProject: (newProject: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => void;
+  onAddProject: (newProject: Omit<Project, 'id' | 'shareableLinkId' | 'modules' | 'timelineEvents' | 'changeRequests' | 'initialRequirements' | 'projectDocuments'>) => Promise<void>;
 }
 
 export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreateProjectDialogProps) {
@@ -36,16 +36,19 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [deadline, setDeadline] = useState<Date | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (name && description && startDate && deadline) {
-      onAddProject({
+      setIsSubmitting(true);
+      await onAddProject({
         name,
         description,
         startDate,
         deadline,
         status: 'Planificación'
       });
+      setIsSubmitting(false);
       onClose();
       // Reset fields
       setName('');
@@ -137,7 +140,10 @@ export function CreateProjectDialog({ isOpen, onClose, onAddProject }: CreatePro
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={handleSubmit}>Crear Proyecto</Button>
+          <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Crear Proyecto
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
