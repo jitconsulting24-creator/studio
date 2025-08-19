@@ -96,37 +96,37 @@ export default function ModulePartsManager({ parts, onPartsChange, isClientView 
   if (isClientView) {
     return (
         <div className="space-y-2">
-        <ul className="space-y-2">
-            {parts.map((part) => (
-            <li key={part.id} className="flex items-center justify-between gap-2 text-sm">
-                <div className="flex items-center gap-2 flex-1">
-                    <Checkbox
-                        id={`part-approve-${part.id}`}
-                        checked={part.status === 'Completado'}
-                        disabled={part.status !== 'En Revisión' || isApproving === part.id}
-                        onCheckedChange={() => handleApprovePart(part.id)}
-                        aria-label={`Aprobar '${part.name}'`}
-                    />
-                    <label
-                        htmlFor={`part-approve-${part.id}`}
-                        className={cn(
-                            'flex-1',
-                            part.status === 'En Revisión' ? 'cursor-pointer' : 'cursor-default',
-                            part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
+            <ul className="space-y-2">
+                {parts.map((part) => (
+                    <li key={part.id} className="flex items-center justify-between gap-2 text-sm">
+                        <div className="flex items-center gap-2 flex-1">
+                            <Checkbox
+                                id={`part-approve-${part.id}`}
+                                checked={part.status === 'Completado'}
+                                disabled={part.status !== 'En Revisión' || isApproving === part.id}
+                                onCheckedChange={() => handleApprovePart(part.id)}
+                                aria-label={`Aprobar '${part.name}'`}
+                            />
+                            <label
+                                htmlFor={`part-approve-${part.id}`}
+                                className={cn(
+                                    'flex-1',
+                                    part.status === 'En Revisión' ? 'cursor-pointer' : 'cursor-default',
+                                    part.status === 'Completado' ? 'text-muted-foreground line-through' : ''
+                                )}
+                            >
+                                {part.name}
+                            </label>
+                        </div>
+                        {isApproving === part.id && (
+                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                         )}
-                    >
-                        {part.name}
-                    </label>
-                </div>
-                 {isApproving === part.id && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                )}
-                {part.status === 'Completado' && !isApproving && (
-                    <span className="text-xs font-semibold text-green-600">Aprobado</span>
-                )}
-            </li>
-            ))}
-        </ul>
+                        {part.status === 'Completado' && !isApproving && (
+                            <span className="text-xs font-semibold text-green-600">Aprobado</span>
+                        )}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
   }

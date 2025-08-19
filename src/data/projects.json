@@ -59,7 +59,7 @@
           },
           {
             "id": "part-1755580026064",
-            "name": "ss",
+            "name": "Flujo de recuperación de contraseña",
             "status": "Pendiente"
           }
         ],
@@ -103,6 +103,16 @@
       }
     ],
     "timelineEvents": [
+      {
+        "eventDescription": "El cliente ha aprobado la tarea: \"Endpoint de API para Login\" en el módulo \"Autenticación de Usuario\"",
+        "eventDate": "2025-08-19T05:14:55.870Z",
+        "actor": "cliente"
+      },
+      {
+        "eventDescription": "El cliente ha aprobado el módulo: \"Catálogo de Productos\"",
+        "eventDate": "2025-08-19T05:13:36.618Z",
+        "actor": "cliente"
+      },
       {
         "eventDescription": "El cliente ha aprobado la tarea: \"Endpoint de API para Login\" en el módulo \"Autenticación de Usuario\"",
         "eventDate": "2025-08-19T05:09:57.958Z",
